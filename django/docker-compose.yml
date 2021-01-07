@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  django:
+    build: ./python
+    image: django
+    container_name: django
+    volumes:
+      - ./src:/code
+      - ./python/uwsgi/:/etc/uwsgi/
+    ports:
+      - "8000:8000"
+    external_links:
+      - db
+    networks:
+      - common_link
+
+networks:
+  common_link:
+    external: true

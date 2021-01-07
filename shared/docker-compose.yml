@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:stable
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    logging:
+      options:
+        max-size: 5m
+        max-file: "10"
+    networks:
+      - common_link
+
+  db:
+    image: mariadb:latest
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=ecsite_database
+      - MYSQL_USER=ecsite
+      - MYSQL_PASSWORD=ecsite_password
+    restart: always
+    logging:
+      options:
+        max-size: 5m
+        max-file: "10"
+    networks:
+      - common_link
+
+networks:
+  common_link:
+    external: true
+
