@@ -5,4 +5,4 @@ ecsite課題のサーバー
 1. create-docker-link.sh　を実行
 2. sharedディレクトリへ移動後、docker-compose up or start
 3. djangoディレクトリへ移動後,docker-compose up or start
-4. O.O.O.O:80へアクセス
+4. localhostへアクセス
