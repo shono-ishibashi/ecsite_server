@@ -11,6 +11,7 @@ class User(models.Model):
     zipcode = models.CharField(max_length=7, null=False, blank=False)
     address = models.CharField(max_length=200, null=False, blank=False)
     telephone = models.CharField(max_length=15, null=False, blank=False)
+    status = models.CharField(max_length=1, default='0')
 
     class Meta:
         db_table = 'users'
@@ -79,3 +80,15 @@ class OrderTopping(models.Model):
 
     class Meta:
         db_table = 'order_toppings'
+
+
+class UserUtil(models.Model):
+    token = models.TextField(null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_utils'
+
+    def __str__(self):
+        return "{}: {}".format(self.user.name, self.created_at)
