@@ -72,12 +72,12 @@ class FetchUser(APIView):
         try:
             user_util = models.UserUtil.objects.get(token=token)
         except models.UserUtil.DoesNotExist:
-            return Response({'is_login': False, 'token': token},
+            return Response({'is_login': False},
                             status=status.HTTP_401_UNAUTHORIZED)
 
         # 有効期限を10分に設定
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=10)
+                        timedelta(minutes=10)
         # TODO: (ishibashi)　エラーの条件分岐
         if is_valid_date:
             user = models.User.objects.get(user__token=token)
@@ -86,5 +86,5 @@ class FetchUser(APIView):
                             status=status.HTTP_200_OK)
 
         # 有効期限切れ
-        return Response({'is_login': False, 'token': token},
+        return Response({'is_login': False, 'message': 'token time out'},
                         status=status.HTTP_401_UNAUTHORIZED)
