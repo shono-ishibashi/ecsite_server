@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,7 +27,7 @@ class HelloWorld(APIView):
 
 class RegisterUser(APIView):
     """
-    クラスベースのAPIViewです。
+    POST: ユーザーの登録を行う
     """
 
     def post(self, request, format=None):
@@ -48,7 +49,14 @@ class RegisterUser(APIView):
 
 
 class Login(APIView):
+    """
+    POST: ログイン処理を行う
+    """
+
     def post(self, request, format=None):
+        """
+        Return 認証成功:token, 認証失敗:エラーメッセージ
+        """
         data = request.data
         try:
             user = models.User.objects.get(
@@ -58,15 +66,24 @@ class Login(APIView):
             return Response({'message': 'ユーザーが存在しないかパスワードが間違っています'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # tokenを生成し、DBへ保存する
         user_util = models.UserUtil()
         user_util.user = user
         user_util.token = generate_token()
         user_util.save()
+        # 生成したtoken以外は削除
+        models.UserUtil.objects.filter(
+            ~Q(token=user_util.token), Q(user=user)).delete()
 
-        return Response({'token': user_util.token})
+        return Response({'token': user_util.token},
+                        status=status.HTTP_201_CREATED)
 
 
 class FetchUser(APIView):
+    """
+    GET: ログイン中のユーザーを取得する
+    """
+
     def get(self, request, format=None):
         token = request.META.get('HTTP_AUTHORIZATION')
         try:
@@ -84,6 +101,19 @@ class FetchUser(APIView):
             return Response({'user': user_serializer.data},
                             status=status.HTTP_200_OK)
 
-        # 有効期限切れ
+        # 有効期限切れのトークンの処理
+        # 期限切れのトークンを削除
+        models.UserUtil.objects.values().filter(token=token).delete()
         return Response({'is_login': False, 'message': 'token time out'},
                         status=status.HTTP_401_UNAUTHORIZED)
+
+
+class Logout(APIView):
+    """
+    ログアウト処理を行う
+    """
+
+    def post(self, request, format=None):
+        token = request.META.get('HTTP_AUTHORIZATION')
+        models.UserUtil.objects.filter(token=token).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
