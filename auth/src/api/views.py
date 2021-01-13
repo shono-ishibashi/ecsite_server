@@ -94,7 +94,7 @@ class FetchUser(APIView):
 
         # 有効期限を10分に設定
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-                        timedelta(minutes=10)
+            timedelta(minutes=10)
         if is_valid_date:
             user = models.User.objects.get(user__token=token)
             user_serializer = serializers.UserSerializer(user)
@@ -103,7 +103,7 @@ class FetchUser(APIView):
 
         # 有効期限切れのトークンの処理
         # 期限切れのトークンを削除
-        models.UserUtil.objects.values().filter(token=token).delete()
+        models.UserUtil.objects.filter(token=token).delete()
         return Response({'is_login': False, 'message': 'token time out'},
                         status=status.HTTP_401_UNAUTHORIZED)
 
