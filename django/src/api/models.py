@@ -63,33 +63,12 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
-    def to_dict(self):
-        ret = model_to_dict(self)
-        ret['order_date'] = self.order_date.strftime("%y/%m/%d %H:%M")
-        ret['delivery_time'] = self.delivery_time.strftime("%y/%m/%d %H:%M")
-        return ret
-
-    def encode(self):
-        return {
-            'user': self.user,
-            'status': self.status,
-            'total_price': self.total_price,
-            'order_date': self.order_date,
-            'destination_name': self.destination_name,
-            'destination_email': self.destination_email,
-            'destination_zipcode': self.destination_zipcode,
-            'destination_address': self.destination_address,
-            'destination_tel': self.destination_tel,
-            'delivery_time': self.delivery_time,
-            'payment_method': self.payment_method
-        }
-
 
 class OrderItem(models.Model):
     item = models.ForeignKey(
-        Item, on_delete=models.CASCADE, related_name='orderitems')
+        Item, on_delete=models.CASCADE, related_name='order_items')
     order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, related_name='orderitems')
+        Order, on_delete=models.CASCADE, related_name='order_items')
     quantity = models.IntegerField()
     size = models.CharField(max_length=1)
 
@@ -99,9 +78,9 @@ class OrderItem(models.Model):
 
 class OrderTopping(models.Model):
     topping = models.ForeignKey(
-        Topping, on_delete=models.CASCADE, related_name='ordertoppings')
+        Topping, on_delete=models.CASCADE, related_name='order_toppings')
     order_item = models.ForeignKey(
-        OrderItem, on_delete=models.CASCADE, related_name='ordertoppings')
+        OrderItem, on_delete=models.CASCADE, related_name='order_toppings')
 
     class Meta:
         db_table = 'order_toppings'
