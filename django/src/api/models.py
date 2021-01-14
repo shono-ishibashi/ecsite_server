@@ -51,7 +51,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.IntegerField(null=False)
     total_price = models.IntegerField(null=False)
-    order_data = models.DateField()
+    order_date = models.DateField()
     destination_name = models.CharField(max_length=100)
     destination_email = models.CharField(max_length=100)
     destination_zipcode = models.CharField(max_length=7)
