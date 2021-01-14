@@ -3,8 +3,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import requests
 from . import serializers
-from .models import Order
+from .models import Order, User
 from django.core.mail import send_mail
+
+url = 'http://nginx:80/auth/'
 
 
 @api_view(['GET'])
@@ -25,7 +27,7 @@ def request_test(request):
 
 
 @api_view(['POST', 'GET'])
-def order(request, pk):
+def order(request):
     """注文処理のAPI
 
     Args:
@@ -36,25 +38,38 @@ def order(request, pk):
         Response: ステータスコード
     """
     if request.method == "POST":
+        token = request.META.get('HTTP_AUTHORIZATION')
+        headers = {"Authorization": token}
+        response = requests.get(url + "user/?format=json", headers=headers)
+        if response.status_code == 401:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         request_data = request.data
-        order = Order.objects.get(pk=pk)
-        serializer = serializers.OrderSerializer(order, request_data)
+        try:
+            user = User.objects.get(pk=response.json()["user"]["id"])
+            order = Order.objects.get(user=user, status=0)
+        except Order.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = serializers.OrderSerializer(
+            order,
+            request_data,
+            partial=True)
         if serializer.is_valid():
             serializer.save()
             destination_email = serializer.data["destination_email"]
             send_confirmation_mail(destination_email)
             return Response(status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         # 動作確認でPOSTを投げるため。本番ではGETメソッドは受け取らないのでこの部分は削除予定。
         return Response('order API')
 
 # POSTで送るデータ例
 # {
-#     "id": 2,
 #     "status": 1,
-#     "user": 1,
 #     "total_price": 1200,
 #     "order_data": "2021-01-04",
 #     "destination_name": "yuta",
@@ -63,7 +78,7 @@ def order(request, pk):
 #     "destination_address": "5-20-5",
 #     "destination_tel": "080-0000-0000",
 #     "delivery_time": "2021-01-12T18:14:04.082068+09:00",
-#     "payment_method": 2,
+#     "payment_method": 2
 # }
 
 
