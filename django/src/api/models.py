@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.forms.models import model_to_dict
 # Create your models here.
 
 
@@ -50,22 +50,46 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.IntegerField(null=False)
     total_price = models.IntegerField(null=False)
-    order_data = models.DateField()
-    destination_name = models.CharField(max_length=100)
-    destination_email = models.CharField(max_length=100)
-    destination_zipcode = models.CharField(max_length=7)
-    destination_address = models.CharField(max_length=200)
-    destination_tel = models.CharField(max_length=15)
-    delivery_time = models.DateTimeField()
-    payment_method = models.IntegerField()
+    order_date = models.DateField(blank=True, null=True)
+    destination_name = models.CharField(max_length=100, blank=True, null=True)
+    destination_email = models.CharField(max_length=100, blank=True, null=True)
+    destination_zipcode = models.CharField(max_length=7, blank=True, null=True)
+    destination_address = models.CharField(
+        max_length=200, blank=True, null=True)
+    destination_tel = models.CharField(max_length=15, blank=True, null=True)
+    delivery_time = models.DateTimeField(blank=True, null=True)
+    payment_method = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'orders'
 
+    def to_dict(self):
+        ret = model_to_dict(self)
+        ret['order_date'] = self.order_date.strftime("%y/%m/%d %H:%M")
+        ret['delivery_time'] = self.delivery_time.strftime("%y/%m/%d %H:%M")
+        return ret
+
+    def encode(self):
+        return {
+            'user': self.user,
+            'status': self.status,
+            'total_price': self.total_price,
+            'order_date': self.order_date,
+            'destination_name': self.destination_name,
+            'destination_email': self.destination_email,
+            'destination_zipcode': self.destination_zipcode,
+            'destination_address': self.destination_address,
+            'destination_tel': self.destination_tel,
+            'delivery_time': self.delivery_time,
+            'payment_method': self.payment_method
+        }
+
 
 class OrderItem(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(
+        Item, on_delete=models.CASCADE, related_name='orderitems')
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='orderitems')
     quantity = models.IntegerField()
     size = models.CharField(max_length=1)
 
@@ -74,8 +98,10 @@ class OrderItem(models.Model):
 
 
 class OrderTopping(models.Model):
-    topping = models.ForeignKey(Topping, on_delete=models.CASCADE)
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    topping = models.ForeignKey(
+        Topping, on_delete=models.CASCADE, related_name='ordertoppings')
+    order_item = models.ForeignKey(
+        OrderItem, on_delete=models.CASCADE, related_name='ordertoppings')
 
     class Meta:
         db_table = 'order_toppings'
