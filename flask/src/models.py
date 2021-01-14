@@ -26,20 +26,18 @@ class ItemSchema(ModelSchema):
         model = Item
 
 
-class OrderItem(db.Model):
-    __tablename__ = 'order_items'
+class Topping(db.Model):
+    __tablename__ = 'toppings'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    size = db.Column(db.String(1), nullable=False)
-    # item_id = db.Column(db.Integer, nullable=False)
-    item_id = db.Column(db.Integer, ForeignKey("items.id"))
-    order_id = db.Column(db.Integer, ForeignKey("orders.id"), nullable=False)
+    id = db.Column(INTEGER(), primary_key=True, nullable=False)
+    name = db.Column(TEXT(), nullable=False)
+    price_m = db.Column(INTEGER(), nullable=False)
+    price_l = db.Column(INTEGER(), nullable=False)
 
 
-class OrderItemSchema(ModelSchema):
+class ToppingSchema(ModelSchema):
     class Meta:
-        model = OrderItem
+        model = Topping
 
 
 class OrderTopping(db.Model):
@@ -48,6 +46,35 @@ class OrderTopping(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     order_item_id = db.Column(db.Integer, ForeignKey("order_items.id"), nullable=False)
     topping_id = db.Column(db.Integer, ForeignKey("toppings.id"), nullable=False)
+    topping = db.relationship("Topping", lazy='joined')
+
+
+class OrderToppingSchema(ModelSchema):
+    topping = fields.Nested(ToppingSchema)
+
+    class Meta:
+        model = OrderTopping
+
+
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    size = db.Column(db.String(1), nullable=False)
+    # item_id = db.Column(db.Integer, nullable=False)
+    item_id = db.Column(db.Integer, ForeignKey("items.id"))
+    item = db.relationship("Item", lazy='joined')
+    order_toppings = db.relationship("OrderTopping", lazy='joined')
+    order_id = db.Column(db.Integer, ForeignKey("orders.id"), nullable=False)
+
+
+class OrderItemSchema(ModelSchema):
+    order_toppings = fields.Nested(OrderToppingSchema, many=True)
+    item = fields.Nested(ItemSchema)
+
+    class Meta:
+        model = OrderItem
 
 
 class Order(db.Model):
@@ -65,8 +92,7 @@ class Order(db.Model):
     delivery_time = db.Column(db.DateTime, nullable=False)
     payment_method = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, ForeignKey("users.id"))
-
-    order_items = db.relationship("OrderItem", backref='order')
+    order_items = db.relationship("OrderItem", backref='order', lazy='joined')
 
 
 class OrderSchema(ModelSchema):
@@ -74,15 +100,6 @@ class OrderSchema(ModelSchema):
         model = Order
 
     order_items = fields.Nested(OrderItemSchema, many=True)
-
-
-class Topping(db.Model):
-    __tablename__ = 'toppings'
-
-    id = db.Column(INTEGER(), primary_key=True, nullable=False)
-    name = db.Column(TEXT(), nullable=False)
-    price_m = db.Column(INTEGER(), nullable=False)
-    price_l = db.Column(INTEGER(), nullable=False)
 
 
 class UserUtil(db.Model):
