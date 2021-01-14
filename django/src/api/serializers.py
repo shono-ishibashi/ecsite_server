@@ -21,23 +21,8 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ToppingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Topping
-        fields = '__all__'
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = models.Order
-        fields = '__all__'
-
-
 class OrderItemSerializer(serializers.ModelSerializer):
-    item = ItemSerializer()
-    order = OrderSerializer()
+    item = ItemSerializer(read_only=True)
 
     class Meta:
         model = models.OrderItem
@@ -50,4 +35,13 @@ class OrderToppingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.OrderTopping
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Order
+        # fields = '__all__'
         fields = '__all__'

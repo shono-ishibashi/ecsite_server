@@ -67,10 +67,11 @@ class ViewUser(generics.ListAPIView):
 @api_view(['GET', 'POST'])
 def cart(request):
     if request.method == 'GET':
+        # TODO: もしorderがなかったときの処理を追加
+        # status=0 と userで検索
         order = models.Order.objects.get(status=0)
-        orders = []
-        orders.append(order)
-        serializer = serializers.OrderSerializer(orders, many=True)
+
+        serializer = serializers.OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
