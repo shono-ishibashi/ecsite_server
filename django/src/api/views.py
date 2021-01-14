@@ -66,32 +66,13 @@ class ViewUser(generics.ListAPIView):
 
 @api_view(['GET', 'POST'])
 def cart(request):
-    def json_serial(obj):
-        if isinstance(obj, (datetime.date, datetime.datetime)):
-            return obj.isoformat()
-        # raise TypeError("Type %s not serializable" % type(obj))
-
-    def default(o):
-        if hasattr(o, "order_date"):
-            return o.isoformat()
-        elif hasattr(o, "delivery_time"):
-            return o.isoformat()
-        else:
-            return str(o)
-
-    def encode(obj):
-        if isinstance(obj, django_models.Model):
-            return obj.encode()
-        elif isinstance(obj, QuerySet):
-            return list(obj)
-        else:
-            raise TypeError(repr(obj) + " is not JSON serializable")
     if request.method == 'GET':
-        orders = models.Order.objects.get(status=0)
-        data = core.serializers.serialize("json", [orders])
-        struct = json.loads(data)
-        order = json.dumps(struct[0])
-        return Response(order, status=status.HTTP_200_OK)
+        # TODO: もしorderがなかったときの処理を追加
+        # status=0 と userで検索
+        order = models.Order.objects.get(status=0)
+
+        serializer = serializers.OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         # order_data = models.Order.objects.get(status=0)
         # order = {
         #     'id': str(order_data.id),
