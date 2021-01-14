@@ -13,15 +13,8 @@ def test_items():
     # ログインユーザーを取得するmock
     login_user = models.UserUtil.query.filter(
         models.UserUtil.token == token).first()
-    print('#################')
-    print(vars(login_user))
-    print('#################')
     orders = models.Order.query.filter(
         models.Order.user_id == login_user.user_id).all()
-    print('#################')
-    for order in orders:
-        print(vars(order.order_items[0].item))
-    print('#################')
     order_schema = models.OrderSchema(many=True)
     items = models.Item.query.all()
     item_schema = models.ItemSchema(many=True)
