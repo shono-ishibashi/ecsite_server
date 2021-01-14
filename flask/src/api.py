@@ -1,29 +1,33 @@
 from flask import Blueprint, request, jsonify
 
-# from .models import db, User
+# from . import models
+
+import models
 
 api = Blueprint('api', __name__, url_prefix='/flask')
 
 
-# エンドポイント http:/host/api/users, GETメソッドのみ受け付ける
-# routeは複数指定も可能、methodsはリストなので複数指定可能
-# @api.route('/order_history', methods=['GET'])
-# def fetch_order_historys():
-#     # クエリーパラメータ取得 request.args.get
-#     # 第一引数:パラメータ名、default=で初期値、type=で変換する型を指定できる
-#     q_limit = request.args.get('limit', default=-1, type=int)
-#     q_offset = request.args.get('offset', default=0, type=int)
-#
-#     if q_limit == -1:
-#         # DBから全件取得
-#         users = User.query.all()
-#     else:
-#         # DBからoffset, limitを使用して取得
-#         users = User.query.offset(q_offset).limit(q_limit)
-#
-#     # jsonレスポンス返却
-#     # jsonifyにdict型オブジェクトを設定するとjsonデータのレスポンスが生成される
-#     return jsonify({'users': [user.to_dict() for user in users]})
+@api.route('/test/item', methods=['GET'])
+def test_items():
+    token = request.headers.get('Authorization')
+    # ログインユーザーを取得
+    login_user = models.UserUtil.query.filter(
+        models.UserUtil.token == token).first()
+    print('#################')
+    print(vars(login_user))
+    print('#################')
+    orders = models.Order.query.filter(
+        models.Order.user_id == login_user.user_id).all()
+    print('#################')
+    for order in orders:
+        print(vars(order))
+    print('#################')
+    order_schema = models.OrderSchema(many=True)
+    items = models.Item.query.all()
+    item_schema = models.ItemSchema(many=True)
+    return jsonify(
+        {'items': item_schema.dump(items),
+         'orders': order_schema.dump(orders)}), 200
 
 
 @api.route('/test', methods=['GET'])

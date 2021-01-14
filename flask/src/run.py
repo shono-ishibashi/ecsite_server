@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify
-# from models import db
+from models import db
 
 from api import api
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_pyfile('conf.cfg')
 
 # DB初期化
-# db.init_app(app)
+db.init_app(app)
 
 # Blueprint登録
 app.register_blueprint(api)
