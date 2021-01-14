@@ -10,7 +10,7 @@ api = Blueprint('api', __name__, url_prefix='/flask')
 @api.route('/test/item', methods=['GET'])
 def test_items():
     token = request.headers.get('Authorization')
-    # ログインユーザーを取得
+    # ログインユーザーを取得するmock
     login_user = models.UserUtil.query.filter(
         models.UserUtil.token == token).first()
     print('#################')
@@ -20,7 +20,7 @@ def test_items():
         models.Order.user_id == login_user.user_id).all()
     print('#################')
     for order in orders:
-        print(vars(order))
+        print(vars(order.order_items[0].item))
     print('#################')
     order_schema = models.OrderSchema(many=True)
     items = models.Item.query.all()
