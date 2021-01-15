@@ -59,9 +59,6 @@ def order(request):
         partial=True)
     if serializer.is_valid():
         serializer.save()
-        time = serializer.data['delivery_time']
-        time = time[2:1]
-        print(time)
         send_confirmation_mail(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:
