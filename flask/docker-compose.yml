@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  :
+  flask:
     build: ./python
     container_name: flask
     volumes:
