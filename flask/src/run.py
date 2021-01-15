@@ -5,9 +5,10 @@ from api import api
 
 # Flask本体
 app = Flask(__name__)
-
 # ファイルから設定を読み込む
 app.config.from_pyfile('conf.cfg')
+# 文字化けを解消
+app.config['JSON_AS_ASCII'] = False
 
 # DB初期化
 db.init_app(app)
