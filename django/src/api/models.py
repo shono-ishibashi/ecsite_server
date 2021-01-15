@@ -11,7 +11,7 @@ class User(models.Model):
     zipcode = models.CharField(max_length=7, null=False, blank=False)
     address = models.CharField(max_length=200, null=False, blank=False)
     telephone = models.CharField(max_length=15, null=False, blank=False)
-    status = models.CharField(max_length=1, default='0')
+    status = models.CharField(max_length=1, default=0)
 
     class Meta:
         db_table = 'users'
@@ -50,23 +50,31 @@ class Topping(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.IntegerField(null=False)
-    total_price = models.IntegerField(null=False)
-    order_date = models.DateField()
-    destination_name = models.CharField(max_length=100)
-    destination_email = models.CharField(max_length=100)
-    destination_zipcode = models.CharField(max_length=7)
-    destination_address = models.CharField(max_length=200)
-    destination_tel = models.CharField(max_length=15)
-    delivery_time = models.DateTimeField()
-    payment_method = models.IntegerField()
+    total_price = models.IntegerField()
+    order_date = models.DateField(null=True, blank=True)
+    destination_name = models.CharField(max_length=100, blank=True)
+    destination_email = models.CharField(max_length=100, blank=True)
+    destination_zipcode = models.CharField(max_length=7, blank=True)
+    destination_address = models.CharField(max_length=200, blank=True)
+    destination_tel = models.CharField(max_length=15, blank=True)
+    delivery_time = models.DateTimeField(null=True, blank=True)
+    payment_method = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table = 'orders'
 
 
 class OrderItem(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="order_items"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="order_items"
+    )
     quantity = models.IntegerField()
     size = models.CharField(max_length=1)
 
@@ -75,8 +83,16 @@ class OrderItem(models.Model):
 
 
 class OrderTopping(models.Model):
-    topping = models.ForeignKey(Topping, on_delete=models.CASCADE)
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    topping = models.ForeignKey(
+        Topping,
+        on_delete=models.CASCADE,
+        related_name="order_toppings"
+    )
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="order_toppings"
+    )
 
     class Meta:
         db_table = 'order_toppings'
