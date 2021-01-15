@@ -1,12 +1,15 @@
-from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 import requests
+
 from . import serializers
 from .models import Order, User
-from django.core.mail import send_mail
 
-url = 'http://nginx:80/auth/'
+
+auth_url = 'http://nginx:80/auth/'
 
 
 @api_view(['GET'])
@@ -19,79 +22,74 @@ def request_test(request):
     Returns:
         Response: テスト用のjson
     """
-    url = 'http://nginx:80/auth/'
-    response = requests.get(url=url)
+    auth_url = 'http://nginx:80/auth/'
+    response = requests.get(url=auth_url)
     data = response.content
     print(data)
     return Response({'res': data}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 def order(request):
     """注文処理のAPI
 
     Args:
         request (object): djangoのrequestオブジェクト
-        pk (int): orderテーブルのプライマリーキー
 
     Returns:
         Response: ステータスコード
     """
-    if request.method == "POST":
-        token = request.META.get('HTTP_AUTHORIZATION')
-        headers = {"Authorization": token}
-        response = requests.get(url + "user/?format=json", headers=headers)
-        if response.status_code == 401:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        request_data = request.data
-        try:
-            user = User.objects.get(pk=response.json()["user"]["id"])
-            order = Order.objects.get(user=user, status=0)
-        except Order.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    token = request.META.get('HTTP_AUTHORIZATION')
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    if response.status_code == 401:
+        # トークンによる認証が失敗すると401_Unauthorizedを返す
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        user = User.objects.get(pk=response.json()["user"]["id"])
+        order = Order.objects.get(user=user, status=0)
+    except Order.DoesNotExist:
+        # user_idがログインユーザーのidでかつstatusが0のorderレコードが無ければ404_Not_Foundを返す
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = serializers.OrderSerializer(
-            order,
-            request_data,
-            partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            destination_email = serializer.data["destination_email"]
-            send_confirmation_mail(destination_email)
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'GET':
-        # 動作確認でPOSTを投げるため。本番ではGETメソッドは受け取らないのでこの部分は削除予定。
-        return Response('order API')
-
-# POSTで送るデータ例
-# {
-#     "status": 1,
-#     "total_price": 1200,
-#     "order_data": "2021-01-04",
-#     "destination_name": "yuta",
-#     "destination_email": "y10@example.com",
-#     "destination_zipcode": "000-0000",
-#     "destination_address": "5-20-5",
-#     "destination_tel": "080-0000-0000",
-#     "delivery_time": "2021-01-12T18:14:04.082068+09:00",
-#     "payment_method": 2
-# }
+    request_data = request.data
+    serializer = serializers.OrderSerializer(
+        order,
+        request_data,
+        partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        time = serializer.data['delivery_time']
+        time = time[2:1]
+        print(time)
+        send_confirmation_mail(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
+        return Response(
+            {"errors": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST)
 
 
-def send_confirmation_mail(email_address):
+def send_confirmation_mail(order_info):
     """注文確定後に宛先Eメールアドレスにメールを送るメソッド
 
     Args:
-        email_address (string): 宛先Eメールアドレス
+        order_info (object): 注文完了時にorderメソッドから渡される注文情報
 
     Returns:　無し
     """
-    subject = "注文確認"
+    subject = "ご注文ありがとうございます。"
     message = "ご注文ありがとうございます。"
+    html_message = render_to_string(
+        'confirm_mail_template.html',
+        {'context': order_info})
     from_email = 'rakus.ec2021@gmail.com'  # 送信者
-    recipient_list = [email_address]  # 宛先リスト
-    send_mail(subject, message, from_email, recipient_list)
+    recipient_list = [order_info["destination_email"]]  # 宛先リスト
+    send_mail(
+        subject,
+        message,
+        from_email,
+        recipient_list,
+        html_message=html_message
+    )

@@ -10,23 +10,23 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='order',
-            name='order_data',
-        ),
-        migrations.AddField(
-            model_name='order',
-            name='order_date',
-            field=models.DateField(blank=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='order',
-            name='delivery_time',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-        migrations.AlterField(
-            model_name='order',
-            name='payment_method',
-            field=models.IntegerField(blank=True, null=True),
-        ),
+        # migrations.RemoveField(
+        #     model_name='order',
+        #     name='order_data',
+        # ),
+        # migrations.AddField(
+        #     model_name='order',
+        #     name='order_date',
+        #     field=models.DateField(blank=True, null=True),
+        # ),
+        # migrations.AlterField(
+        #     model_name='order',
+        #     name='delivery_time',
+        #     field=models.DateTimeField(blank=True, null=True),
+        # ),
+        # migrations.AlterField(
+        #     model_name='order',
+        #     name='payment_method',
+        #     field=models.IntegerField(blank=True, null=True),
+        # ),
     ]

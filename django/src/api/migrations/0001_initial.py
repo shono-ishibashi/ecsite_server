@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.IntegerField()),
                 ('total_price', models.IntegerField()),
-                ('order_data', models.DateField()),
+                ('order_date', models.DateField()),
                 ('destination_name', models.CharField(max_length=100)),
                 ('destination_email', models.CharField(max_length=100)),
                 ('destination_zipcode', models.CharField(max_length=7)),

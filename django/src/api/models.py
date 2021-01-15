@@ -11,7 +11,7 @@ class User(models.Model):
     zipcode = models.CharField(max_length=7, null=False, blank=False)
     address = models.CharField(max_length=200, null=False, blank=False)
     telephone = models.CharField(max_length=15, null=False, blank=False)
-    status = models.CharField(max_length=1, default='0')
+    status = models.CharField(max_length=1, default=0)
 
     class Meta:
         db_table = 'users'
@@ -65,8 +65,16 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="order_items"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="order_items"
+    )
     quantity = models.IntegerField()
     size = models.CharField(max_length=1)
 
@@ -75,8 +83,16 @@ class OrderItem(models.Model):
 
 
 class OrderTopping(models.Model):
-    topping = models.ForeignKey(Topping, on_delete=models.CASCADE)
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    topping = models.ForeignKey(
+        Topping,
+        on_delete=models.CASCADE,
+        related_name="order_toppings"
+    )
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="order_toppings"
+    )
 
     class Meta:
         db_table = 'order_toppings'
