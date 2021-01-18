@@ -3,15 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework import generics
-from django.db import models as django_models
-from django import core
 import requests
 
 from . import models
 from . import serializers
-
-import json
-import datetime
 
 
 class HelloWorld(APIView):
@@ -64,17 +59,35 @@ class ViewUser(generics.ListAPIView):
     serializer_class = serializers.UserSerializer
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def cart(request):
+    """カート機能のAPI
+
+    Args:
+        request(object): djangoのrequestオブジェクト 
+
+    Returns:
+        Response: ステータスコード
+    """
     if request.method == 'GET':
-        # TODO: もしorderがなかったときの処理を追加
-        # status=0 と userで検索
-        order = models.Order.objects.get(status=0)
-
-        serializer = serializers.OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        try:
+            user = models.User.objects.get(pk=2)
+            order = models.Order.objects.get(user=user, status=0)
+            serializer = serializers.OrderSerializer(order)
+            serializer.data['user']['password'] = "********"
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except models.Order.DoesNotExist:
+            empty_order = []
+            return Response(empty_order, status=status.HTTP_404_NOT_FOUND)
     elif request.method == 'POST':
+        user = models.User.objects.get(pk=2)
         request_data = request.data
-        serializer = serializers.OrderItemSerializer()
-        return Response(status=status.HTTP_200_OK)
+        serializer = serializers.OrderSerializer(data=request_data)
+        if serializer.is_valid():
+            user_id = 2
+            serializer.create(request_data, user_id)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST)

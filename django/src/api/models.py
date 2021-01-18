@@ -78,7 +78,7 @@ class OrderItem(models.Model):
 
 class OrderTopping(models.Model):
     topping = models.ForeignKey(
-        Topping, on_delete=models.CASCADE, related_name='order_toppings')
+        Topping, on_delete=models.CASCADE)
     order_item = models.ForeignKey(
         OrderItem, on_delete=models.CASCADE, related_name='order_toppings')
 
