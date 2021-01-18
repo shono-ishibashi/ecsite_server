@@ -12,7 +12,6 @@ class User(models.Model):
     status = models.CharField(max_length=1, null=False, blank=False, default=0)
 
     class Meta:
-        managed = False
         db_table = 'users'
 
     def __str__(self):
@@ -26,5 +25,4 @@ class UserUtil(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False
         db_table = 'user_utils'
