@@ -86,6 +86,9 @@ DATABASES = {
         'PORT': '3306',
         'PASSWORD': 'ecsite_password',
         'USER': 'ecsite',
+        'TEST': {
+            'NAME': 'test_database',
+        }
     }
 }
 
