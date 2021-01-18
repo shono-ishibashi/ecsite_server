@@ -1,9 +1,10 @@
+import requests
+
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import requests
 
 from . import serializers
 from .models import Order, User
@@ -24,9 +25,9 @@ def request_test(request):
     """
     auth_url = 'http://nginx:80/auth/'
     response = requests.get(url=auth_url)
-    data = response.content
+    data = response.json()
     print(data)
-    return Response({'res': data}, status=status.HTTP_200_OK)
+    return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
