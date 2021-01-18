@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 
 import models
 import auth_util
-
+import json
 api = Blueprint('api', __name__, url_prefix='/flask')
 
 
@@ -64,3 +64,32 @@ def fetch_order_history_count():
         .filter(models.Order.status != 0) \
         .count()
     return jsonify({'count': order_history_count}), 200
+
+
+@api.route('/item/', methods=['GET'])
+def fetch_item_list():
+    """
+    商品一覧を取得するメソッド
+    デフォルトでの並び順は安価順
+    商品名を指定しなれけば全件取得
+    商品名での検索は部分一致で行っている
+    検索の結果、該当するデータが無ければ空のlistを返す
+    """
+    item_name = request.args.get("item_name", default='', type=str)
+    sort_id = request.args.get("sort_id", default=0, type=int)
+    if sort_id == 1:
+        # sort_idが1なら高価順に並び替え
+        items = models.Item.query \
+            .filter(models.Item.name.like(f'%{item_name}%')) \
+            .order_by(models.Item.price_m.desc(), models.Item.name.asc()) \
+            .all()
+    else:
+        # sort_idが1以外なら安価順に並び替え
+        items = models.Item.query \
+            .filter(models.Item.name.like(f'%{item_name}%')) \
+            .order_by(models.Item.price_m.asc(), models.Item.name.asc()) \
+            .all()
+
+    item_schema = models.ItemSchema(many=True)
+    return jsonify(
+        {'items': item_schema.dump(items)}), 200
