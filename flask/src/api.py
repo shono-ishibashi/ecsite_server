@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 
 import models
 import auth_util
-import json
+
 api = Blueprint('api', __name__, url_prefix='/flask')
 
 
@@ -93,3 +93,15 @@ def fetch_item_list():
     item_schema = models.ItemSchema(many=True)
     return jsonify(
         {'items': item_schema.dump(items)}), 200
+
+
+@api.route('/item-name/', methods=['GET'])
+def fetch_item_name():
+    """
+    オートコンプリート用の全商品の名前を取得するメソッド
+    """
+    item_name_list = models.Item.query.with_entities(models.Item.name).all()
+    item_names = []
+    for item_name in item_name_list:
+        item_names.append(item_name[0])
+    return jsonify({"item_names": item_names}), 200
