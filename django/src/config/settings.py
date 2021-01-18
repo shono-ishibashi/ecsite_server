@@ -146,3 +146,9 @@ EMAIL_USE_TLS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 NUMBER_GROUPING = 3
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'config.renderers.UTF8CharsetJSONRenderer'
+    ]
+}

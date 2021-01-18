@@ -83,6 +83,9 @@ DATABASES = {
         'PORT': '3306',
         'PASSWORD': 'ecsite_password',
         'USER': 'ecsite',
+        'TEST': {
+            'NAME': 'test_database',
+        }
     }
 }
 
@@ -128,3 +131,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'config.renderers.UTF8CharsetJSONRenderer'
+    ]
+}
