@@ -52,9 +52,12 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data, user_id):
         user = models.User.objects.get(pk=user_id)
-        order = models.Order.objects.create(
-            user=user, status=validated_data['status'],
-            total_price=validated_data['total_price'])
+        try:
+            order = models.Order.objects.get(user=user, status=0)
+        except models.Order.DoesNotExist:
+            order = models.Order.objects.create(
+                user=user, status=validated_data['status'],
+                total_price=validated_data['total_price'])
         for order_item in validated_data['order_items']:
             item = models.Item.objects.get(pk=order_item['item'])
             order_item_obj = models.OrderItem.objects.\
@@ -68,6 +71,38 @@ class OrderSerializer(serializers.ModelSerializer):
                 models.OrderTopping.objects.create(
                     topping=topping, order_item=order_item_obj)
         return order
+
+    def update(self, validated_data, user_id):
+        user = models.User.objects.get(pk=user_id)
+        order = models.Order.objects.get(
+            user=user, status=0
+        )
+
+        for order_item in validated_data['order_items']:
+            order_item_obj = models.OrderItem.objects.get(pk=order_item['id'])
+            order_item_obj.quantity = order_item['quantity']
+            order_item_obj.size = order_item['size']
+            order_item_obj.save()
+            models.OrderTopping.objects.filter(
+                order_item=order_item_obj).delete()
+            for order_topping in order_item['order_toppings']:
+                topping = models.Topping.objects.get(
+                    pk=order_topping['topping'])
+                models.OrderTopping.objects.create(
+                    topping=topping, order_item=order_item)
+
+        order.total_price = validated_data['total_price']
+        order.save()
+        return order
+
+    def delete(self, order_item_id, user):
+        order_item = models.OrderItem.objects.get(pk=order_item_id)
+        models.OrderTopping.objects.filter(order_item=order_item).delete()
+        order_item.delete()
+        order = models.Order.objects.get(user=user, status=0)
+        order_items = models.OrderItem.objects.filter(order=order)
+        if len(order_items) == 0:
+            order.delete()
 
     class Meta:
         model = models.Order
