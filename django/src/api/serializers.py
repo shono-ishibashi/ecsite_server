@@ -4,6 +4,12 @@ from rest_framework import serializers
 from . import models
 
 
+class UserSearilizer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = '__all__'
+
+
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Item
@@ -29,7 +35,6 @@ class ToppingSerializer(serializers.ModelSerializer):
 
 
 class OrderToppingSerializer(serializers.ModelSerializer):
-    topping = ToppingSerializer(read_only=True)
     topping = ToppingSerializer(read_only=True)
 
     class Meta:
