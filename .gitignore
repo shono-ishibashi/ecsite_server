@@ -7,3 +7,4 @@ flask/.idea/vcs.xml
 
 auth/src/config/settings_local.py
 django/src/config/settings_local.py
+
