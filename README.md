@@ -6,3 +6,4 @@ ecsite課題のサーバー
 2. sharedディレクトリへ移動後、docker-compose up or start
 3. djangoディレクトリへ移動後,docker-compose up or start
 4. localhostへアクセス
+

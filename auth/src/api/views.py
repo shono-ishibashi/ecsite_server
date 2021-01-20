@@ -34,14 +34,15 @@ class RegisterUser(APIView):
         user_serializer = serializers.UserSerializer(data=request.data)
         # validationエラーがあれば、400を返す。
         if user_serializer.is_valid():
-            data = request.data
+            data = request.data.copy()
             # passwordをハッシュ化
             data['password'] = hash_password(data['password'])
             user_serializer = serializers.UserSerializer(data=data)
             # save()を呼び出すために再度is_valid()を呼び出す
             user_serializer.is_valid()
             user_serializer.save()
-            return Response({'message': 'success creating user'})
+            return Response({'message': 'success creating user'},
+                            status=status.HTTP_201_CREATED)
 
         return Response({'message': 'BAD REQUEST',
                          "errors": user_serializer.errors},
@@ -64,7 +65,7 @@ class Login(APIView):
                 email=data['email'])
         except models.User.DoesNotExist:
             return Response({'message': 'ユーザーが存在しないかパスワードが間違っています'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         # tokenを生成し、DBへ保存する
         user_util = models.UserUtil()
@@ -85,7 +86,12 @@ class FetchUser(APIView):
     """
 
     def get(self, request, format=None):
+        """ログインユーザーを取得する
+        """
+
         token = request.META.get('HTTP_AUTHORIZATION')
+
+        # DBからtokenでを取得する
         try:
             user_util = models.UserUtil.objects.get(token=token)
         except models.UserUtil.DoesNotExist:

@@ -6,8 +6,7 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.HelloWorld.as_view()),
-    path('test/', views.request_test),
-    path('test/item/', views.QueryTest.as_view()),
-    path('admin/', admin.site.urls, name='admin')
+    path('test/', views.request_test, name='test'),
+    path('admin/', admin.site.urls, name='admin'),
+    path('order/', views.order, name='order')
 ]

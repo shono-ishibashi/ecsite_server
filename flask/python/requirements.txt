@@ -10,3 +10,4 @@ flask_marshmallow
 marshmallow-sqlalchemy
 sqlalchemy_utils
 uwsgi
+requests

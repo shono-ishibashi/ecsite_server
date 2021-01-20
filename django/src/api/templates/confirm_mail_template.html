@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    {% load humanize %}
+    <strong>{{context.destination_name}}　様</strong>
+    <p>ラクスピザをご利用いだだき、ありがとうございます。</p>
+    <p>以下のご注文を承ったことをお知らせいたします。</p><br>
+
+
+    <strong>お届け先住所</strong>
+    <p>&emsp;{{context.destination_address}}</p>
+    <strong>ご注文商品</strong>
+
+    <ol>
+        {% for oi in context.order_items %}
+        <li>
+            {{oi.item.name}}
+            {% if oi.size == "m" %}
+            (Mサイズ)
+            {% else %}
+            (Lサイズ)
+            {% endif %}<br>
+            <p>
+                トッピング :
+                {% if oi.order_toppings %}
+                {% for ot in oi.order_toppings %}
+                &nbsp;{{ot.topping.name}}
+                {% endfor %}
+                {% else %}
+                無し
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ol>
+    <strong>合計金額</strong>
+    <p>&emsp;{{context.total_price | intcomma}}円 </p>
+</body>
+
+</html>
