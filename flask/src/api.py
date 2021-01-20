@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
 
 import models
 import auth_util
@@ -7,14 +6,20 @@ import auth_util
 api = Blueprint('api', __name__, url_prefix='/flask')
 
 
+@api.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
 @api.route('/', methods=['GET'])
-@cross_origin()
 def request_test():
     return jsonify({'test': 'hello! this is flask container'})
 
 
 @api.route('/order-history/', methods=['GET'])
-@cross_origin()
 def fetch_order_history():
     """
     ログイン中のユーザーの注文履歴を取得するメソッド
@@ -47,7 +52,6 @@ def fetch_order_history():
 
 
 @api.route('/order-history/count/')
-@cross_origin()
 def fetch_order_history_count():
     """
     ログイン中の注文履歴の総数を取得するメソッド
@@ -69,7 +73,6 @@ def fetch_order_history_count():
 
 
 @api.route('/item/', methods=['GET'])
-@cross_origin()
 def fetch_item_list():
     """
     商品一覧を取得するメソッド
@@ -99,7 +102,6 @@ def fetch_item_list():
 
 
 @api.route('/item-name/', methods=['GET'])
-@cross_origin()
 def fetch_item_name():
     """
     オートコンプリート用の全商品の名前を取得するメソッド
