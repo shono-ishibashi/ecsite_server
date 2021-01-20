@@ -136,13 +136,15 @@ REST_FRAMEWORK = {
     ]
 }
 
+
+
 # 許可するオリジン
-CORS_ORIGIN_WHITELIST = [
-    'localhost:3000',
-    'localhost:3001',
-    'localhost:3000/',
-    'localhost:3001/',
-]
+# CORS_ORIGIN_WHITELIST = [
+#     'localhost:3000',
+#     'localhost:3001',
+#     'localhost:3000/',
+#     'localhost:3001/',
+# ]
 # レスポンスを公開する
 CORS_ALLOW_CREDENTIALS = True
 
