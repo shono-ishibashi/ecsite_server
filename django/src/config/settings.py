@@ -17,7 +17,6 @@ from . import settings_local
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ SECRET_KEY = settings_local.SECRET_KEY
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -76,7 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -94,29 +91,27 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation' +
-        '.UserAttributeSimilarityValidator',
+                '.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation' +
-        '.MinimumLengthValidator',
+                '.MinimumLengthValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation' +
-        '.CommonPasswordValidator',
+                '.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation' +
-        '.NumericPasswordValidator',
+                '.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -131,7 +126,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -145,12 +139,30 @@ EMAIL_HOST_USER = 'rakus.ec2021@gmail.com'
 EMAIL_HOST_PASSWORD = 'ec-site2021'
 EMAIL_USE_TLS = True
 
+NUMBER_GROUPING = 3
 
 CORS_ORIGIN_ALLOW_ALL = True
-NUMBER_GROUPING = 3
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'config.renderers.UTF8CharsetJSONRenderer'
     ]
 }
+
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'accept-encoding'
+)
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+)
