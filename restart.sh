@@ -1,7 +1,5 @@
 #!/bin/sh
 
-docker network create --driver bridge common_link
-
 cd auth
 sudo docker-compose restart
 cd ..

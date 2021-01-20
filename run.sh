@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker network create --driver bridge common_link
+sudo docker network create --driver bridge common_link
 
 cd auth
 sudo docker-compose up -d
