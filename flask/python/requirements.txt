@@ -11,4 +11,4 @@ marshmallow-sqlalchemy
 sqlalchemy_utils
 uwsgi
 requests
-flask-cores
+flask-cors
