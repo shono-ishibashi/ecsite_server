@@ -1,7 +1,5 @@
 from flask import Blueprint, request, jsonify
 
-# from . import models
-
 import models
 import auth_util
 

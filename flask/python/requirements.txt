@@ -11,3 +11,4 @@ marshmallow-sqlalchemy
 sqlalchemy_utils
 uwsgi
 requests
+install flask-cores
