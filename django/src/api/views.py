@@ -26,7 +26,6 @@ def request_test(request):
     auth_url = 'http://nginx:80/auth/'
     response = requests.get(url=auth_url)
     data = response.json()
-    print(data)
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -40,19 +39,21 @@ def cart(request):
     Returns:
         Response: ステータスコード
     """
-    # token = request.META.get('HTTP_AUTHORIZATION')
-    # headers = {"Authorization": token}
-    # response = request.get(auth_url + "user/?format=json", headers=headers)
-    # if response.status_code == 401:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    token = request.META.get('HTTP_AUTHORIZATION')
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    if response.status_code == 401:
+        # トークンによる認証が失敗すると401_Unauthorizedを返す
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         try:
-            user = User.objects.get(pk=2)
+            user = User.objects.get(pk=response.json()["user"]["id"])
             order = Order.objects.get(user=user, status=0)
             serializer = serializers.OrderSerializer(order)
             serializer.data['user']['password'] = "********"
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
+            # user idがログインユーザーのidでstatusが0のオーダーがなければ空の配列を返す
             empty_order = []
             return Response(empty_order, status=status.HTTP_200_OK)
 
@@ -60,10 +61,11 @@ def cart(request):
         request_data = request.data
         serializer = serializers.OrderSerializer(data=request_data)
         if serializer.is_valid():
-            user_id = 2
+            user_id = response.json()["user"]["id"]
             serializer.create(request_data, user_id)
             return Response(status=status.HTTP_200_OK)
         else:
+            # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
             return Response(
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,10 +73,11 @@ def cart(request):
         request_data = request.data
         serializer = serializers.OrderSerializer(data=request_data)
         if serializer.is_valid():
-            user_id = 2
+            user_id = response.json()["user"]["id"]
             serializer.update(request_data, user_id)
             return Response(status=status.HTTP_200_OK)
         else:
+            # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
             return Response(
                 {"errors": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST)
@@ -90,11 +93,14 @@ def delete_cart(request, order_item_id):
     Returns:
         Response: ステータスコード
     """
-    # token = request.META.get('HTTP_AUTHORIZATION')
-    # headers = {"Authorization": token}
-    # response = request.get(auth_url + "user/?format=json", headers=headers)
+    token = request.META.get('HTTP_AUTHORIZATION')
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    if response.status_code == 401:
+        # トークンによる認証が失敗すると401_Unauthorizedを返す
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     serializer = serializers.OrderSerializer()
-    user = 2
+    user = response.json()["user"]["id"]
     serializer.delete(order_item_id, user)
     return Response(status=status.HTTP_200_OK)
 
