@@ -17,6 +17,15 @@ db.init_app(app)
 app.register_blueprint(api)
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'x-requested-with,content-type,accept,origin,authorization,x-csrftoken,accept-encoding')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return jsonify({'error': {
