@@ -136,7 +136,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-
+CORS_ALLOW_ALL_ORIGINS = True
 
 # 許可するオリジン
 # CORS_ORIGIN_WHITELIST = [
