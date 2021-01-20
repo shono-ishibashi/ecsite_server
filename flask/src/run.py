@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
-from models import db
+from flask_cors import CORS
 
+from models import db
 from api import api
 
 # Flask本体
@@ -9,6 +10,9 @@ app = Flask(__name__)
 app.config.from_pyfile('conf.cfg')
 # 文字化けを解消
 app.config['JSON_AS_ASCII'] = False
+
+# CORS
+CORS(app)
 
 # DB初期化
 db.init_app(app)
