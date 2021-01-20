@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -133,3 +135,11 @@ REST_FRAMEWORK = {
         'config.renderers.UTF8CharsetJSONRenderer'
     ]
 }
+
+# 許可するオリジン
+CORS_ORIGIN_WHITELIST = [
+    'localhost:3000',
+    'localhost:3001',
+]
+# レスポンスを公開する
+CORS_ALLOW_CREDENTIALS = True
