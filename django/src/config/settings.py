@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'graphene_django',
+    'pizza_graphql',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -153,4 +155,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'config.renderers.UTF8CharsetJSONRenderer'
     ]
+}
+
+GRAPHENE = {
+    'SCHEMA': 'django.schema.schema'
 }
