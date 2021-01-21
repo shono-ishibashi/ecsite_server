@@ -41,8 +41,8 @@ def order(request):
         Response: ステータスコード
     """
     token = request.META.get('HTTP_AUTHORIZATION')
-    headers = {"Authorization": token}
-    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    response = fetch_login_user(token)
+
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -91,3 +91,9 @@ def send_confirmation_mail(order_info):
         recipient_list,
         html_message=html_message
     )
+
+
+def fetch_login_user(token):
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/", headers=headers)
+    return response
