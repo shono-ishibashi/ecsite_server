@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'graphene_django',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
-    'django.contrib.humanize'
+    'pizza_graphql.apps.PizzaGraphqlConfig',
+    'django.contrib.humanize',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
