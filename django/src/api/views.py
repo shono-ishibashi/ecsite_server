@@ -58,6 +58,7 @@ def order(request):
         order,
         request_data,
         partial=True)
+
     if serializer.is_valid():
         serializer.save()
         send_confirmation_mail(serializer.data)

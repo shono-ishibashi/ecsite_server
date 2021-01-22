@@ -19,7 +19,7 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
 
 class UserFactory(factory.django.DjangoModelFactory):
-    name = 'test name'
+    name = 'test_name'
     email = 'example@example.com'
     password = 'testpassword'
     zipcode = '1234567'
@@ -32,19 +32,3 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
         django_get_or_create = ('email',)
-
-
-class UserFactory02(factory.django.DjangoModelFactory):
-    name = 'test name'
-    email = 'example02@example.com'
-    password = 'testpassword'
-    zipcode = '1234567'
-    address = 'test address'
-    telephone = '0120111111'
-    status = '0'
-
-    user = factory.RelatedFactory(OrderFactory, 'user')
-
-    class Meta:
-        model = User
-        django_get_or_create = ('email', )
