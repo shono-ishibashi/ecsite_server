@@ -16,5 +16,6 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('django/', include('api.urls'))
+    path('django/', include('api.urls')),
+    path('django_ql/', include('pizza_graphql.urls'))
 ]
