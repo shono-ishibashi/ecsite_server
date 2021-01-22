@@ -33,7 +33,7 @@ def fetch_order_history():
     orders = models.Order.query \
         .filter(models.Order.user_id == login_user_id) \
         .filter(models.Order.status != 0) \
-        .order_by(models.Order.order_date.desc(), models.Order.id.asc()) \
+        .order_by(models.Order.order_date.desc(), models.Order.id.desc()) \
         .limit(limit) \
         .offset(offset) \
         .all()
