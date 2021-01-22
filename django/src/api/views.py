@@ -166,3 +166,9 @@ def send_confirmation_mail(order_info):
         recipient_list,
         html_message=html_message
     )
+
+
+def fetch_login_user(token):
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/", headers=headers)
+    return response
