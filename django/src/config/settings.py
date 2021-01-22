@@ -142,11 +142,30 @@ EMAIL_HOST_USER = 'rakus.ec2021@gmail.com'
 EMAIL_HOST_PASSWORD = 'ec-site2021'
 EMAIL_USE_TLS = True
 
-CORS_ORIGIN_ALLOW_ALL = True
 NUMBER_GROUPING = 3
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'config.renderers.UTF8CharsetJSONRenderer'
     ]
 }
+
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'accept-encoding'
+)
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+)
