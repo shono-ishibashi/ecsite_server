@@ -100,7 +100,7 @@ class FetchUser(APIView):
 
         # 有効期限を10分に設定
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=10)
+            timedelta(minutes=59)
         if is_valid_date:
             user = models.User.objects.get(user__token=token)
             user_serializer = serializers.UserSerializer(user)
