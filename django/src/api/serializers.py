@@ -52,6 +52,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    user = UserSearilizer(read_only=True)
+    order_items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = models.Order
+        fields = '__all__'
+
+
+class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     order_items = OrderItemSerializer(many=True, read_only=True)
 
