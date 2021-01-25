@@ -44,7 +44,8 @@ def cart(request):
     response = requests.get(auth_url + "user/?format=json", headers=headers)
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"message": "ユーザー認証に失敗しました"},
+                        status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         try:
             user = User.objects.get(pk=response.json()["user"]["id"])
@@ -66,8 +67,9 @@ def cart(request):
             return Response(status=status.HTTP_200_OK)
         else:
             # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
-            return Response(
-                status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "データの形式が正しくありません"},
+                            {"errors": serializer.errors},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PUT':
         request_data = request.data
@@ -79,6 +81,7 @@ def cart(request):
         else:
             # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
             return Response(
+                {"message": "データの形式が正しくありません"},
                 {"errors": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -98,7 +101,8 @@ def delete_cart(request, order_item_id):
     response = requests.get(auth_url + "user/?format=json", headers=headers)
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"message": "ユーザー認証に失敗しました"},
+                        status=status.HTTP_401_UNAUTHORIZED)
     serializer = serializers.CartSerializer()
     user = response.json()["user"]["id"]
     serializer.delete(order_item_id, user)
