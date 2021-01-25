@@ -66,6 +66,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 total_price=validated_data['total_price'])
 
         order_item = validated_data['order_item']
+        print(type(order_item['item']))
         item = models.Item.objects.get(pk=order_item['item'])
         # order_item情報を作成
         order_item_obj = models.OrderItem.objects.\

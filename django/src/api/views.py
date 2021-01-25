@@ -40,8 +40,8 @@ def cart(request):
         Response: ステータスコード
     """
     token = request.META.get('HTTP_AUTHORIZATION')
-    headers = {"Authorization": token}
-    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    response = fetch_login_user(token)
+    print(response)
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
         return Response(status=status.HTTP_401_UNAUTHORIZED)
