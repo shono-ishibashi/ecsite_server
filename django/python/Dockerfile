@@ -9,4 +9,3 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 ADD . /code/
 CMD ["uwsgi", "--ini", "/etc/uwsgi/uwsgi.ini"]
-

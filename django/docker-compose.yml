@@ -8,12 +8,10 @@ services:
     volumes:
       - ./src:/code
       - ./python/uwsgi/:/etc/uwsgi/
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     external_links:
       - db
-      - nginx
-
     networks:
       - common_link
 
