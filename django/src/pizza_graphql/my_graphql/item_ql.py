@@ -22,7 +22,7 @@ class ItemFilter(FilterSet):
     )
 
 
-class ItemNode(DjangoObjectType):
+class ItemType(DjangoObjectType):
     class Meta:
         model = Item
         filter_fields = {
