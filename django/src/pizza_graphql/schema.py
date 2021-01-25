@@ -17,7 +17,7 @@ class ItemFilter(FilterSet):
 
     order_by = OrderingFilter(
         fields=(
-            ('name', 'name'), ('price_m', 'priceM'),
+            ('name', 'name'), ('price_m', 'price_m'),
         )
     )
 
