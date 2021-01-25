@@ -1,7 +1,5 @@
 from flask import Blueprint, request, jsonify
 
-# from . import models
-
 import models
 import auth_util
 
@@ -35,7 +33,7 @@ def fetch_order_history():
     orders = models.Order.query \
         .filter(models.Order.user_id == login_user_id) \
         .filter(models.Order.status != 0) \
-        .order_by(models.Order.order_date.desc()) \
+        .order_by(models.Order.order_date.desc(), models.Order.id.desc()) \
         .limit(limit) \
         .offset(offset) \
         .all()
@@ -105,3 +103,26 @@ def fetch_item_name():
     for item_name in item_name_list:
         item_names.append(item_name[0])
     return jsonify({"item_names": item_names}), 200
+
+
+@api.route('/item/<int:item_id>/', methods=['GET'])
+def fetch_item_detail(item_id):
+    """
+    商品詳細を取得するメソッド
+    """
+    item = models.Item.query.get(item_id)
+    if item:
+        item_schema = models.ItemSchema()
+        return jsonify({"item": item_schema.dump(item)}), 200
+    else:
+        return jsonify({}), 404
+
+
+@api.route('/topping/', methods=['GET'])
+def fetch_topping_list():
+    """
+    トッピング一覧を取得するメソッド
+    """
+    toppings = models.Topping.query.all()
+    topping_schema = models.ToppingSchema(many=True)
+    return jsonify({"topping": topping_schema.dump(toppings)}), 200

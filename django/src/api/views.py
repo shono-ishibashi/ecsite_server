@@ -34,7 +34,7 @@ def cart(request):
     """カート機能のAPI
 
     Args:
-        request(object): djangoのrequestオブジェクト     
+        request(object): djangoのrequestオブジェクト
 
     Returns:
         Response: ステータスコード
@@ -50,7 +50,7 @@ def cart(request):
         try:
             user = User.objects.get(pk=response.json()["user"]["id"])
             order = Order.objects.get(user=user, status=0)
-            serializer = serializers.OrderSerializer(order)
+            serializer = serializers.CartSerializer(order)
             serializer.data['user']['password'] = "********"
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
@@ -60,7 +60,7 @@ def cart(request):
 
     elif request.method == 'POST':
         request_data = request.data
-        serializer = serializers.OrderSerializer(data=request_data)
+        serializer = serializers.CartSerializer(data=request_data)
         if serializer.is_valid():
             user_id = response.json()["user"]["id"]
             serializer.create(request_data, user_id)
@@ -72,7 +72,7 @@ def cart(request):
 
     elif request.method == 'PUT':
         request_data = request.data
-        serializer = serializers.OrderSerializer(data=request_data)
+        serializer = serializers.CartSerializer(data=request_data)
         if serializer.is_valid():
             user_id = response.json()["user"]["id"]
             serializer.update(request_data, user_id)
@@ -87,7 +87,7 @@ def cart(request):
 @api_view(['DELETE'])
 def delete_cart(request, order_item_id):
     """カート内アイテム削除用のAPI
-    Args: 
+    Args:
         request(object): djangoのrequestオブジェクト,
         order_item_id: 削除したいオーダーアイテムのid
 
@@ -101,7 +101,7 @@ def delete_cart(request, order_item_id):
         # トークンによる認証が失敗すると401_Unauthorizedを返す
         return Response({"message": "ユーザー認証に失敗しました"},
                         status=status.HTTP_401_UNAUTHORIZED)
-    serializer = serializers.OrderSerializer()
+    serializer = serializers.CartSerializer()
     user = response.json()["user"]["id"]
     serializer.delete(order_item_id, user)
     return Response(status=status.HTTP_200_OK)
@@ -118,8 +118,8 @@ def order(request):
         Response: ステータスコード
     """
     token = request.META.get('HTTP_AUTHORIZATION')
-    headers = {"Authorization": token}
-    response = requests.get(auth_url + "user/?format=json", headers=headers)
+    response = fetch_login_user(token)
+
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -168,3 +168,9 @@ def send_confirmation_mail(order_info):
         recipient_list,
         html_message=html_message
     )
+
+
+def fetch_login_user(token):
+    headers = {"Authorization": token}
+    response = requests.get(auth_url + "user/", headers=headers)
+    return response
