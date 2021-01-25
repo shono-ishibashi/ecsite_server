@@ -67,7 +67,8 @@ def cart(request):
             return Response(status=status.HTTP_200_OK)
         else:
             # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
-            return Response({"message": "データの形式がただいくありません"},
+            return Response({"message": "データの形式が正しくありません"},
+                            {"errors": serializer.errors},
                             status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PUT':
@@ -81,6 +82,7 @@ def cart(request):
             # POSTしてきたデータがバリデーションに引っかかった場合400_Bad_Requestを返す
             return Response(
                 {"message": "データの形式が正しくありません"},
+                {"errors": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST)
 
 
