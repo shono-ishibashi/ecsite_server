@@ -44,7 +44,7 @@ def cart(request):
     response = requests.get(auth_url + "user/?format=json", headers=headers)
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
-        return Response({"message": "認証に失敗しました"},
+        return Response({"message": "ユーザー認証に失敗しました"},
                         status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         try:
@@ -99,7 +99,7 @@ def delete_cart(request, order_item_id):
     response = requests.get(auth_url + "user/?format=json", headers=headers)
     if response.status_code == 401:
         # トークンによる認証が失敗すると401_Unauthorizedを返す
-        return Response({"message": "認証に失敗しました"},
+        return Response({"message": "ユーザー認証に失敗しました"},
                         status=status.HTTP_401_UNAUTHORIZED)
     serializer = serializers.OrderSerializer()
     user = response.json()["user"]["id"]
