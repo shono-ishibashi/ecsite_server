@@ -98,7 +98,7 @@ class FetchUser(APIView):
             return Response({'is_login': False},
                             status=status.HTTP_401_UNAUTHORIZED)
 
-        # 有効期限を10分に設定
+        # 有効期限を59分に設定
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
             timedelta(minutes=59)
         if is_valid_date:
