@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 
+from django.db.models import Q
 import graphene
 import graphql
 from graphene_django.filter import DjangoFilterConnectionField
 
-from api.models import User, UserUtil
-from pizza_graphql.my_graphql import item_ql, auth_ql
+import auth_utils
+from api.models import User, UserUtil, Order
+from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql
 
 
 class Query(graphene.ObjectType):
@@ -17,10 +19,25 @@ class Query(graphene.ObjectType):
 
     user = graphene.Field(auth_ql.UserType)
     register_user = graphene.Field(auth_ql.UserType)
+    order_history = DjangoFilterConnectionField(
+        order_history_ql.OrderHistoryType,
+        filterset_class=order_history_ql.OrderFilter)
 
     # 注文履歴
-    def resolve_order_history(self, info):
-        token = info.context.META.get('HTTP_AUTHORIZATION')
+    # def resolve_order_history(self, info):
+    #     token = info.context.META.get('HTTP_AUTHORIZATION')
+    #     response = auth_utils.fetch_login_user(token)
+
+    #     if response.status_code == 401:
+    #         raise graphql.error.located_error.GraphQLError(
+    #             message="認証時にエラーが発生しました。")
+
+    #     login_user_id = response.json()['user']['id']
+    #     order_history = Order.objects \
+    #         .filter(Q(user_id=login_user_id), ~Q(status=0)) \
+    #         .all()
+
+    #     return order_history
 
     def resolve_user(self, info):
         """[summary]
