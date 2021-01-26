@@ -1,13 +1,8 @@
-import hashlib
-import uuid
+import requests
 
 
-def hash_password(password):
-    password = bytes(password, 'utf-8')
-    encoded_password = hashlib.sha256(password).hexdigest()
-    return encoded_password
-
-
-def generate_token():
-    token = uuid.uuid4().hex
-    return token
+def fetch_login_user(token):
+    url = 'http://nginx:80/auth/user/'
+    headers = {'Authorization': token}
+    response = requests.get(url, headers=headers)
+    return response
