@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 
 from django.db.models import Q
 import graphene
@@ -23,22 +24,6 @@ class Query(graphene.ObjectType):
         order_history_ql.OrderHistoryType,
         filterset_class=order_history_ql.OrderFilter)
 
-    # 注文履歴
-    # def resolve_order_history(self, info):
-    #     token = info.context.META.get('HTTP_AUTHORIZATION')
-    #     response = auth_utils.fetch_login_user(token)
-
-    #     if response.status_code == 401:
-    #         raise graphql.error.located_error.GraphQLError(
-    #             message="認証時にエラーが発生しました。")
-
-    #     login_user_id = response.json()['user']['id']
-    #     order_history = Order.objects \
-    #         .filter(Q(user_id=login_user_id), ~Q(status=0)) \
-    #         .all()
-
-    #     return order_history
-
     def resolve_user(self, info):
         """[summary]
 
@@ -54,25 +39,34 @@ class Query(graphene.ObjectType):
         """
         token = info.context.META.get('HTTP_AUTHORIZATION')
         if token is None:
-            raise graphql.error.located_error.GraphQLError(
-                message="No token in request headers")
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="NO TOKEN IN REQUEST HEADER",
+                    extensions={"code": error_code.get("401")})
 
         try:
             user_util = UserUtil.objects.get(token=token)
         except UserUtil.DoesNotExist:
-            raise graphql.error.located_error.GraphQLError(
-                message="認証に失敗しました。")
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="認証に失敗しました。",
+                    extensions={"code": error_code.get("401")})
 
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=59)
+                        timedelta(minutes=59)
 
         if is_valid_date:
             user = User.objects.get(util=user_util)
             return user
 
         UserUtil.objects.filter(token=token).delete()
-        raise graphql.error.located_error.GraphQLLocatedError(
-            message="トークンの有効期限切れです。")
+        with open("./pizza_graphql/error_code.json", 'r') as json_file:
+            error_code = json.load(json_file)
+            raise graphql.error.located_error.GraphQLError(
+                message="トークンの有効期限が切れています。",
+                extensions={"code": error_code.get("401")})
 
 
 class Mutation(graphene.ObjectType):
