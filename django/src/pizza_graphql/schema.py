@@ -8,7 +8,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 import auth_utils
 from api.models import User, UserUtil, Order
-from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql
+from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
+    cart_ql
 
 
 class Query(graphene.ObjectType):
@@ -24,6 +25,9 @@ class Query(graphene.ObjectType):
         order_history_ql.OrderHistoryType,
         filterset_class=order_history_ql.OrderFilter)
 
+    # カート情報を取得
+    cart = graphene.Field(cart_ql.OrderType)
+    
     def resolve_user(self, info):
         """[summary]
 
@@ -68,9 +72,25 @@ class Query(graphene.ObjectType):
                 message="トークンの有効期限が切れています。",
                 extensions={"code": error_code.get("401")})
 
+    def resolve_cart(self, info, **kwargs):
+        token = info.context.META.get('HTTP_AUTHORIZATION')
+        response = auth_utils.fetch_login_user(token)
+        if response.status_code == 401:
+            raise graphql.error.located_error.GraphQLError(
+                message="認証時にエラーが発生しました。")
+        login_user_id = response.json()['user']['id']
+        user = User.objects.get(pk=login_user_id)
+        try:
+            order = Order.objects.get(user=user, status=0)
+            return order
+        except Order.DoesNotExist:
+            empty_order = []
+            return empty_order
+
 
 class Mutation(graphene.ObjectType):
     register_user = auth_ql.UserSerializerMutation.Field()
+    cart = cart_ql.AddCart.Field()
 
 
 schema = graphene.Schema(
