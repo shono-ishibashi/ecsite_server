@@ -68,6 +68,8 @@ class CartSerializer(serializers.ModelSerializer):
         user = models.User.objects.get(pk=user_id)
         try:
             order = models.Order.objects.get(user=user, status=0)
+            order.total_price = validated_data['total_price']
+            order.save()
         except models.Order.DoesNotExist:
             # user idがログイン中のユーザーidでstatusが0のorderがない場合は新規作成
             order = models.Order.objects.create(
