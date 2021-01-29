@@ -10,7 +10,7 @@ from . import serializers
 from .models import Order, User
 
 
-auth_url = 'http://nginx:80/auth/'
+auth_url = 'https://reacthon-pizza.tk/auth/'
 
 
 @api_view(['GET'])
@@ -23,9 +23,8 @@ def request_test(request):
     Returns:
         Response: テスト用のjson
     """
-    auth_url = 'http://nginx:80/auth/'
     response = requests.get(url=auth_url)
-    data = response.json()
+    data = {"test": "django"}
     return Response(data, status=status.HTTP_200_OK)
 
 
