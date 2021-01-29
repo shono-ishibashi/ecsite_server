@@ -27,7 +27,7 @@ class Query(graphene.ObjectType):
 
     # カート情報を取得
     cart = graphene.Field(cart_ql.OrderType)
-    
+
     def resolve_user(self, info):
         """[summary]
 
@@ -59,7 +59,7 @@ class Query(graphene.ObjectType):
                     extensions={"code": error_code.get("401")})
 
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-                        timedelta(minutes=59)
+            timedelta(minutes=59)
 
         if is_valid_date:
             user = User.objects.get(util=user_util)
@@ -90,7 +90,8 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     register_user = auth_ql.UserSerializerMutation.Field()
-    cart = cart_ql.AddCart.Field()
+    add_cart = cart_ql.AddCart.Field()
+    update_cart = cart_ql.UpdateCart.Field()
 
 
 schema = graphene.Schema(
