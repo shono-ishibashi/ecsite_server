@@ -1,13 +1,12 @@
 import json
 
 from graphene_django import DjangoObjectType
-from api.models import Order, OrderItem, OrderTopping, Topping
 from graphene_django.rest_framework.mutation import SerializerMutation
 import graphene
 import graphql
 
 import auth_utils
-from api.models import User
+from api.models import Order, OrderItem, OrderTopping, Topping, User
 from api.serializers import CartSerializer
 
 
@@ -71,11 +70,11 @@ class AddCart(graphene.Mutation):
                     message="認証時にエラーが発生しました。",
                     extensions={"code": error_code.get("401")})
         login_user_id = response.json()['user']['id']
-        user = User.objects.get(pk=login_user_id)
+        User.objects.get(pk=login_user_id)
         serializer = CartSerializer(data=kwargs)
         if serializer.is_valid():
-            serializer.create(kwargs, login_user_id)
-            return Order.objects.get(user=user, status=0)
+            order = serializer.create(kwargs, login_user_id)
+            return AddCart(order=order)
         else:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
@@ -103,11 +102,11 @@ class UpdateCart(graphene.Mutation):
                     message="認証時にエラーが発生しました。",
                     extensions={"code": error_code.get("401")})
         login_user_id = response.json()['user']['id']
-        user = User.objects.get(pk=login_user_id)
+        User.objects.get(pk=login_user_id)
         serializer = CartSerializer(data=kwargs)
         if serializer.is_valid():
-            serializer.update(kwargs, login_user_id)
-            return Order.objects.get(user=user, status=0)
+            order = serializer.update(kwargs, login_user_id)
+            return UpdateCart(order=order)
         else:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
@@ -135,5 +134,5 @@ class DeleteCart(graphene.Mutation):
         login_user_id = response.json()['user']['id']
         user = User.objects.get(pk=login_user_id)
         serializer = CartSerializer()
-        serializer.delete(kwargs['order_item_id'], user)
-        return Order.objects.get(user=user, status=0)
+        order = serializer.delete(kwargs['order_item_id'], user)
+        return DeleteCart(order=order)
