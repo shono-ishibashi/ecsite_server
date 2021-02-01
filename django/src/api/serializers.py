@@ -132,6 +132,24 @@ class CartSerializer(serializers.ModelSerializer):
         # order内のorder_itemがなければorderごと削除
         if len(order_items) == 0:
             order.delete()
+        else:
+            total_price = 0
+            for orderItem in order_items:
+                print(type(orderItem.order_toppings))
+                topping_count = orderItem.order_toppings.all().count()
+                if orderItem.size == "M":
+                    oredr_item_price = (
+                        orderItem.item.price_m
+                        + topping_count * 200
+                    ) * orderItem.quantity
+                elif orderItem.size == "L":
+                    oredr_item_price = (
+                        orderItem.item.price_l
+                        + topping_count * 300
+                    ) * orderItem.quantity
+                total_price += oredr_item_price
+            order.total_price = total_price
+            order.save()
 
     class Meta:
         model = models.Order
