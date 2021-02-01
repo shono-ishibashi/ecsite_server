@@ -1,3 +1,5 @@
+import json
+
 from graphene_django import DjangoObjectType
 from api.models import Order, OrderItem, OrderTopping, Topping
 from graphene_django.rest_framework.mutation import SerializerMutation
@@ -63,14 +65,23 @@ class AddCart(graphene.Mutation):
         token = info.context.META.get('HTTP_AUTHORIZATION')
         response = auth_utils.fetch_login_user(token)
         if response.status_code == 401:
-            raise graphql.error.located_error.GraphQLError(
-                message="認証時にエラーが発生しました。")
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="認証時にエラーが発生しました。",
+                    extensions={"code": error_code.get("401")})
         login_user_id = response.json()['user']['id']
         user = User.objects.get(pk=login_user_id)
         serializer = CartSerializer(data=kwargs)
         if serializer.is_valid():
             serializer.create(kwargs, login_user_id)
             return Order.objects.get(user=user, status=0)
+        else:
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="データの形式が正しくありません。",
+                    extensions={"code": error_code.get("400")})
 
 
 class UpdateCart(graphene.Mutation):
@@ -86,11 +97,43 @@ class UpdateCart(graphene.Mutation):
         token = info.context.META.get('HTTP_AUTHORIZATION')
         response = auth_utils.fetch_login_user(token)
         if response.status_code == 401:
-            raise graphql.error.located_error.GraphQLError(
-                message="認証時にエラーが発生しました。")
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="認証時にエラーが発生しました。",
+                    extensions={"code": error_code.get("401")})
         login_user_id = response.json()['user']['id']
         user = User.objects.get(pk=login_user_id)
         serializer = CartSerializer(data=kwargs)
         if serializer.is_valid():
             serializer.update(kwargs, login_user_id)
             return Order.objects.get(user=user, status=0)
+        else:
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="データの形式が正しくありません。",
+                    extensions={"code": error_code.get("400")})
+
+
+class DeleteCart(graphene.Mutation):
+    class Arguments:
+        order_item_id = graphene.Int(required=True)
+
+    order = graphene.Field(OrderType)
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        token = info.context.META.get('HTTP_AUTHORIZATION')
+        response = auth_utils.fetch_login_user(token)
+        if response.status_code == 401:
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="認証時にエラーが発生しました。",
+                    extensions={"code": error_code.get("401")})
+        login_user_id = response.json()['user']['id']
+        user = User.objects.get(pk=login_user_id)
+        serializer = CartSerializer()
+        serializer.delete(kwargs['order_item_id'], user)
+        return Order.objects.get(user=user, status=0)

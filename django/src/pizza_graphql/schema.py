@@ -76,8 +76,11 @@ class Query(graphene.ObjectType):
         token = info.context.META.get('HTTP_AUTHORIZATION')
         response = auth_utils.fetch_login_user(token)
         if response.status_code == 401:
-            raise graphql.error.located_error.GraphQLError(
-                message="認証時にエラーが発生しました。")
+            with open("./pizza_graphql/error_code.json", 'r') as json_file:
+                error_code = json.load(json_file)
+                raise graphql.error.located_error.GraphQLError(
+                    message="認証時にエラーが発生しました。",
+                    extensions={"code": error_code.get("401")})
         login_user_id = response.json()['user']['id']
         user = User.objects.get(pk=login_user_id)
         try:
@@ -92,6 +95,7 @@ class Mutation(graphene.ObjectType):
     register_user = auth_ql.UserSerializerMutation.Field()
     add_cart = cart_ql.AddCart.Field()
     update_cart = cart_ql.UpdateCart.Field()
+    delete_cart = cart_ql.DeleteCart.Field()
 
 
 schema = graphene.Schema(
