@@ -150,6 +150,7 @@ class CartSerializer(serializers.ModelSerializer):
                 total_price += oredr_item_price
             order.total_price = total_price
             order.save()
+        return order
 
     class Meta:
         model = models.Order
