@@ -68,6 +68,8 @@ class CartSerializer(serializers.ModelSerializer):
         user = models.User.objects.get(pk=user_id)
         try:
             order = models.Order.objects.get(user=user, status=0)
+            order.total_price = validated_data['total_price']
+            order.save()
         except models.Order.DoesNotExist:
             # user idがログイン中のユーザーidでstatusが0のorderがない場合は新規作成
             order = models.Order.objects.create(
@@ -130,6 +132,24 @@ class CartSerializer(serializers.ModelSerializer):
         # order内のorder_itemがなければorderごと削除
         if len(order_items) == 0:
             order.delete()
+        else:
+            total_price = 0
+            for orderItem in order_items:
+                topping_count = orderItem.order_toppings.all().count()
+                if orderItem.size == "M":
+                    oredr_item_price = (
+                        orderItem.item.price_m
+                        + topping_count * 200
+                    ) * orderItem.quantity
+                elif orderItem.size == "L":
+                    oredr_item_price = (
+                        orderItem.item.price_l
+                        + topping_count * 300
+                    ) * orderItem.quantity
+                total_price += oredr_item_price
+            order.total_price = total_price
+            order.save()
+        return order
 
     class Meta:
         model = models.Order
