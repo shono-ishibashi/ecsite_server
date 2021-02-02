@@ -135,7 +135,6 @@ class CartSerializer(serializers.ModelSerializer):
         else:
             total_price = 0
             for orderItem in order_items:
-                print(type(orderItem.order_toppings))
                 topping_count = orderItem.order_toppings.all().count()
                 if orderItem.size == "M":
                     oredr_item_price = (
