@@ -60,7 +60,7 @@ class Query(graphene.ObjectType):
                     extensions={"code": error_code.get("401")})
 
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=59)
+                        timedelta(minutes=59)
 
         if is_valid_date:
             user = User.objects.get(util=user_util)
@@ -86,37 +86,7 @@ class Query(graphene.ObjectType):
         user = User.objects.get(pk=login_user_id)
         try:
             order = Order.objects.get(user=user, status=0)
-            # order = Order.objects.filter(user=user, status=0).first()
-            # order_item_list = list(
-            #     OrderItem.objects.filter(order=order['id']).values())
-            order_item_list = order.order_items.all()
-            print(order_item_list)
-            for order_item in order_item_list:
-                topping_count = order_item.order_toppings.all().count()
-                # topping_count = len(order_item['order_toppings'])
-                # topping_count = len(
-                #     list(OrderTopping.objects.filter(order_item=order_item['id'])))
-                if order_item.size == "M":
-                    # item = Item.objects.values().get(pk=order_item['item_id'])
-                    sub_total_price = (
-                        order_item.item.price_m
-                        + topping_count*200
-                    ) * order_item.quantity
-                    order_item.sub_total_price = sub_total_price
-                elif order_item.size == "L":
-                    sub_total_price = (
-                        order_item.item.price_l
-                        + topping_count*300
-                    ) * order_item.quantity
-                    order_item.sub_total_price = sub_total_price
-            for order_item in order_item_list:
-                print(order_item.sub_total_price)
-            order.order_items.set(order_item_list)
-            # print(list(order_item_list))
-            # for order_item in order.order_items.all():
-            #     print(order_item.sub_total_price)
-            return model_to_dict(order)
-
+            return order
         except Order.DoesNotExist:
             empty_order = []
             return empty_order
