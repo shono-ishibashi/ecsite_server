@@ -1,7 +1,6 @@
 import json
 
 from graphene_django import DjangoObjectType
-from graphene_django.rest_framework.mutation import SerializerMutation
 import graphene
 import graphql
 
@@ -26,6 +25,10 @@ class OrderItemType(DjangoObjectType):
     class Meta:
         model = OrderItem
         fields = "__all__"
+    sub_total_price = graphene.Int()
+
+    # def resolve_sub_total_price(self, info):
+    #     return self.sub_total_price
 
 
 class OrderType(DjangoObjectType):
@@ -34,9 +37,9 @@ class OrderType(DjangoObjectType):
         fields = "__all__"
 
 
-class CartSerializerMutation(SerializerMutation):
-    class Meta:
-        serializer_class = CartSerializer
+# class CartSerializerMutation(SerializerMutation):
+#     class Meta:
+#         serializer_class = CartSerializer
 
 
 class OrderToppingInput(graphene.InputObjectType):
