@@ -9,7 +9,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 import auth_utils
 from api.models import User, UserUtil, Order
 from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
-    cart_ql
+    cart_ql, order_ql
 
 
 class Query(graphene.ObjectType):
@@ -96,6 +96,7 @@ class Mutation(graphene.ObjectType):
     add_cart = cart_ql.AddCart.Field()
     update_cart = cart_ql.UpdateCart.Field()
     delete_cart = cart_ql.DeleteCart.Field()
+    execute_order = order_ql.ExecuteOrder.Field()
 
 
 schema = graphene.Schema(
