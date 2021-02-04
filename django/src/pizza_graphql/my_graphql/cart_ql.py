@@ -26,7 +26,7 @@ class OrderItemType(DjangoObjectType):
         model = OrderItem
         fields = "__all__"
 
-    sub_total_price = graphene.String()
+    sub_total_price = graphene.Int()
 
     def resolve_sub_total_price(self, info):
         topping_price_m = 200
