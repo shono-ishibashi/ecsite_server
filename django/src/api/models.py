@@ -101,7 +101,8 @@ class OrderTopping(models.Model):
 
 class UserUtil(models.Model):
     token = models.TextField(null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='util')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='util')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

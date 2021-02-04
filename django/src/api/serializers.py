@@ -132,6 +132,7 @@ class CartSerializer(serializers.ModelSerializer):
         # order内のorder_itemがなければorderごと削除
         if len(order_items) == 0:
             order.delete()
+            return None
         else:
             total_price = 0
             for orderItem in order_items:
@@ -149,7 +150,7 @@ class CartSerializer(serializers.ModelSerializer):
                 total_price += oredr_item_price
             order.total_price = total_price
             order.save()
-        return order
+            return order
 
     class Meta:
         model = models.Order
