@@ -5,9 +5,10 @@ from django.db.models import Q
 import graphene
 import graphql
 from graphene_django.filter import DjangoFilterConnectionField
+from django.forms.models import model_to_dict
 
 import auth_utils
-from api.models import User, UserUtil, Order
+from api.models import User, UserUtil, Order, OrderItem, OrderTopping, Item
 from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
     cart_ql, order_ql
 
@@ -59,7 +60,7 @@ class Query(graphene.ObjectType):
                     extensions={"code": error_code.get("401")})
 
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=59)
+                        timedelta(minutes=59)
 
         if is_valid_date:
             user = User.objects.get(util=user_util)
