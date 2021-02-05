@@ -5,17 +5,11 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 import graphene
 import graphql
 
-
 import auth_utils
 from api.models import Order, User
 from api.serializers import OrderSerializer
 from api import views
-
-
-class OrderType02(DjangoObjectType):
-    class Meta:
-        model = Order
-        fields = "__all__"
+from pizza_graphql.my_graphql.cart_ql import OrderType
 
 
 class OrderInput(graphene.InputObjectType):
@@ -39,7 +33,7 @@ class ExecuteOrder(graphene.Mutation):
     class Arguments:
         order = OrderInput(required=True)
 
-    order = graphene.Field(OrderType02)
+    order = graphene.Field(OrderType)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
