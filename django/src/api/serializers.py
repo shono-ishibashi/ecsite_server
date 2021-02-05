@@ -120,6 +120,7 @@ class CartSerializer(serializers.ModelSerializer):
         return order
 
     def delete(self, order_item_id, user):
+
         # pkがorder_item_idのorder_itemを取得
         order_item = models.OrderItem.objects.get(pk=order_item_id)
         # 取得したorder_itemのtoppingを削除

@@ -3,7 +3,6 @@ from django_filters import FilterSet, OrderingFilter
 import graphene
 from graphene_django import DjangoObjectType
 
-
 # TODO もどす
 from api.models import Item, User
 
