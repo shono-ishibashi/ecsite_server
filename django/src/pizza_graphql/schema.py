@@ -5,10 +5,9 @@ from django.db.models import Q
 import graphene
 import graphql
 from graphene_django.filter import DjangoFilterConnectionField
-from django.forms.models import model_to_dict
 
 import auth_utils
-from api.models import User, UserUtil, Order, OrderItem, OrderTopping, Item
+from api.models import User, UserUtil, Order
 from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
     cart_ql
 
@@ -85,8 +84,11 @@ class Query(graphene.ObjectType):
         login_user_id = response.json()['user']['id']
         user = User.objects.get(pk=login_user_id)
         try:
-            order = Order.objects.get(user=user, status=0)
-            # order = Order.objects.filter(user=user, status=0).first()
+            value = ['id', 'user', 'order_items', 'status',
+                     'total_price', 'order_date', 'destination_name']
+            # order = Order.objects.values(*value).get(user=user, status=0)
+            order = Order.objects.filter(
+                user=user, status=0).values(*value).first()
             # order_item_list = list(
             #     OrderItem.objects.filter(order=order['id']).values())
             order_item_list = order.order_items.all()
@@ -115,7 +117,7 @@ class Query(graphene.ObjectType):
             # print(list(order_item_list))
             # for order_item in order.order_items.all():
             #     print(order_item.sub_total_price)
-            return model_to_dict(order)
+            return order
 
         except Order.DoesNotExist:
             empty_order = []

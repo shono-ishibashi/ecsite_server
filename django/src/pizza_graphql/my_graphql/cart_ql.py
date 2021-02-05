@@ -25,7 +25,7 @@ class OrderItemType(DjangoObjectType):
     class Meta:
         model = OrderItem
         fields = "__all__"
-    sub_total_price = graphene.Int()
+    # sub_total_price = graphene.Int()
 
     # def resolve_sub_total_price(self, info):
     #     return self.sub_total_price
