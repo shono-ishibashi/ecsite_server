@@ -16,6 +16,11 @@ class ItemConnection(graphene.Connection):
         return len(self.edges)
 
 
+class ItemNode(graphene.relay.Node):
+    page_info = graphene.Node.Field(required=False)
+    graphene.relay.PageInfo
+
+
 class ItemFilter(FilterSet):
     class Meta:
         model = Item
@@ -31,11 +36,21 @@ class ItemFilter(FilterSet):
 
 
 class ItemType(DjangoObjectType):
+    name = graphene.String(required=False)
+    description = graphene.String(required=False)
+    price_m = graphene.String(required=False)
+    price_l = graphene.String(required=False)
+    image_path = graphene.String(required=False)
+    deleted = graphene.Boolean(required=False)
+
     class Meta:
         model = Item
+        fields = ("name", "description",
+                  "price_m", "price_l",
+                  "image_path", "deleted")
         filter_fields = {
             'name': ['exact', 'icontains', 'istartswith'],
             'id': ['exact'],
         }
         connection_class = ItemConnection
-        interfaces = (graphene.relay.Node,)
+        interfaces = (ItemNode,)
