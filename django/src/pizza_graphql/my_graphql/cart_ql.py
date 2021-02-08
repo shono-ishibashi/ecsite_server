@@ -8,26 +8,30 @@ import graphql
 import auth_utils
 from api.models import Order, OrderItem, OrderTopping, Topping, User
 from api.serializers import CartSerializer
-
-
-class ToppingType(DjangoObjectType):
-    class Meta:
-        model = Topping
-        fields = "__all__"
-        interfaces = (graphene.relay.Node,)
+from pizza_graphql.my_graphql.item_ql import ItemType
+from pizza_graphql.my_graphql.topping_ql import ToppingType
 
 
 class OrderToppingType(DjangoObjectType):
+    topping = graphene.Field(type=ToppingType, required=False)
+
     class Meta:
         model = OrderTopping
-        fields = "__all__"
+        fields = ("topping",)
         interfaces = (graphene.relay.Node,)
 
 
 class OrderItemType(DjangoObjectType):
+    item = graphene.Field(type=ItemType, required=False)
+    quantity = graphene.Int(required=False)
+    size = graphene.String(required=False)
+    order_topping = graphene.List(of_type=OrderToppingType, required=False)
+    sub_total_price = graphene.Int(required=False)
+
     class Meta:
         model = OrderItem
-        fields = "__all__"
+        fields = ("item", "quantity", "size",
+                  "order_topping", "sub_total_price")
         interfaces = (graphene.relay.Node,)
 
     sub_total_price = graphene.Int()
@@ -85,8 +89,6 @@ class AddCart(graphene.Mutation):
         print("kwargs", kwargs)
         # 更新するために入力された値を格納するdict
         payload = decode_order_item_id(kwargs)
-
-        print(88888888888888888888)
 
         token = info.context.META.get('HTTP_AUTHORIZATION')
         response = auth_utils.fetch_login_user(token)

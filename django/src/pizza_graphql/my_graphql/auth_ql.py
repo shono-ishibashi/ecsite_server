@@ -2,7 +2,6 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 import graphene
 from graphene_django import DjangoObjectType
 
-# TODO もどす
 from api.models import User
 from api.serializers import UserSearilizer
 
