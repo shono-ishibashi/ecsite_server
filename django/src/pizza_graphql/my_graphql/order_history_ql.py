@@ -15,8 +15,7 @@ from pizza_graphql.my_graphql.auth_ql import UserType
 class OrderFilter(FilterSet):
     class Meta:
         model = Order
-        fields = {
-        }
+        fields = {}
 
     order_by = OrderingFilter(
         fields=(

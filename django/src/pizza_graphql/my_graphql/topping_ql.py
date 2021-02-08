@@ -22,4 +22,6 @@ class ToppingType(DjangoObjectType):
 
     class Meta:
         model = Topping
+        fields = ("name", "price_m", "price_l")
         interfaces = (graphene.relay.Node,)
+

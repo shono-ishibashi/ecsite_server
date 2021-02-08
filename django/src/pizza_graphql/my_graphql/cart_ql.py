@@ -8,10 +8,14 @@ import graphql
 import auth_utils
 from api.models import Order, OrderItem, OrderTopping, Topping, User
 from api.serializers import CartSerializer
+from pizza_graphql.my_graphql.auth_ql import UserType
 from pizza_graphql.my_graphql.item_ql import ItemType
 from pizza_graphql.my_graphql.topping_ql import ToppingType
 
 
+############################
+# types and connections
+############################
 class OrderToppingType(DjangoObjectType):
     topping = graphene.Field(type=ToppingType, required=False)
 
@@ -21,20 +25,23 @@ class OrderToppingType(DjangoObjectType):
         interfaces = (graphene.relay.Node,)
 
 
+class OrderToppingConnection(graphene.relay.Connection):
+    class Meta:
+        node = OrderToppingType
+
+
 class OrderItemType(DjangoObjectType):
     item = graphene.Field(type=ItemType, required=False)
     quantity = graphene.Int(required=False)
     size = graphene.String(required=False)
-    order_topping = graphene.List(of_type=OrderToppingType, required=False)
     sub_total_price = graphene.Int(required=False)
+    order_toppings = graphene.relay.ConnectionField(OrderToppingConnection, required=False)
 
     class Meta:
         model = OrderItem
         fields = ("item", "quantity", "size",
-                  "order_topping", "sub_total_price")
+                  "order_toppings", "sub_total_price")
         interfaces = (graphene.relay.Node,)
-
-    sub_total_price = graphene.Int()
 
     def resolve_sub_total_price(self, info):
         """OrderItemの値段を計算数メソッド
@@ -57,12 +64,46 @@ class OrderItemType(DjangoObjectType):
         return order_item_price
 
 
+class OrderItemConnection(graphene.relay.Connection):
+    class Meta:
+        node = OrderItemType
+
+
 class OrderType(DjangoObjectType):
+    user = graphene.Field(type=UserType, required=False)
+    status = graphene.Int(required=False)
+    total_price = graphene.Int(required=False)
+    order_date = graphene.Date(required=False)
+    destination_name = graphene.String(required=False)
+    destination_email = graphene.String(required=False)
+    destination_zipcode = graphene.String(required=False)
+    destination_address = graphene.String(required=False)
+    destination_tel = graphene.String(required=False)
+    delivery_time = graphene.DateTime(required=False)
+    payment_method = graphene.Int(required=False)
+    order_items = graphene.relay.ConnectionField(OrderItemConnection, required=False)
+
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ("user",
+                  "status",
+                  "total_price",
+                  "order_date",
+                  "destination_name",
+                  "destination_email",
+                  "destination_zipcode",
+                  "destination_address",
+                  "destination_tel",
+                  "delivery_time",
+                  "payment_method",
+                  "order_items"
+                  )
         interfaces = (graphene.relay.Node,)
 
+
+############################
+# input
+############################
 
 class OrderToppingInput(graphene.InputObjectType):
     topping = graphene.ID()
@@ -76,6 +117,9 @@ class OrderItemInput(graphene.InputObjectType):
     order_toppings = graphene.List(OrderToppingInput, required=True)
 
 
+############################
+# mutate class
+############################
 class AddCart(graphene.Mutation):
     class Arguments:
         order_item = OrderItemInput(required=True)
