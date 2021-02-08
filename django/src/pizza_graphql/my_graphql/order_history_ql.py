@@ -10,6 +10,7 @@ import auth_utils
 # TODO もどす
 from api.models import Order
 from pizza_graphql.my_graphql.auth_ql import UserType
+from pizza_graphql.my_graphql.cart_ql import OrderItemConnection
 
 
 class OrderFilter(FilterSet):
@@ -39,6 +40,8 @@ class OrderHistoryType(DjangoObjectType):
     destination_tel = graphene.String(required=False)
     delivery_time = graphene.DateTime(required=False)
     payment_method = graphene.Int(required=False)
+    order_items = graphene.relay.ConnectionField(
+        OrderItemConnection, required=False)
 
     class Meta:
         model = Order
