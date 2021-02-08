@@ -16,11 +16,6 @@ class ItemConnection(graphene.Connection):
         return len(self.edges)
 
 
-class ItemNode(graphene.relay.Node):
-    page_info = graphene.Node.Field(required=False)
-    graphene.relay.PageInfo
-
-
 class ItemFilter(FilterSet):
     class Meta:
         model = Item
@@ -53,4 +48,4 @@ class ItemType(DjangoObjectType):
             'id': ['exact'],
         }
         connection_class = ItemConnection
-        interfaces = (ItemNode,)
+        interfaces = (graphene.relay.Node,)
