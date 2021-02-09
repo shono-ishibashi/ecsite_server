@@ -6,8 +6,8 @@ import graphene
 import graphql
 from graphene_django import DjangoObjectType
 
-import auth_utils
 from api.models import Order
+import connect_auth_server
 from pizza_graphql.my_graphql.auth_ql import UserType
 
 
@@ -58,7 +58,7 @@ class OrderHistoryType(DjangoObjectType):
     @classmethod
     def get_queryset(cls, queryset, info):
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)

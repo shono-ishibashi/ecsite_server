@@ -7,7 +7,7 @@ import graphql
 from graphene_django.filter import DjangoFilterConnectionField
 from django.forms.models import model_to_dict
 
-import auth_utils
+import connect_auth_server
 from api.models import User, UserUtil, Order, OrderItem, OrderTopping, Item, \
     Topping
 from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
@@ -77,7 +77,7 @@ class Query(graphene.ObjectType):
 
     def resolve_cart(self, info, **kwargs):
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
