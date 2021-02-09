@@ -2,6 +2,7 @@ from django_filters import FilterSet, OrderingFilter
 
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.types import ErrorType
 
 from api.models import Item, User
 
@@ -37,12 +38,17 @@ class ItemType(DjangoObjectType):
     price_l = graphene.String(required=False)
     image_path = graphene.String(required=False)
     deleted = graphene.Boolean(required=False)
+    errors = ErrorType()
 
     class Meta:
         model = Item
-        fields = ("name", "description",
-                  "price_m", "price_l",
-                  "image_path", "deleted")
+        fields = ("name",
+                  "description",
+                  "price_m",
+                  "price_l",
+                  "image_path",
+                  "deleted",
+                  "errors")
         filter_fields = {
             'name': ['exact', 'icontains', 'istartswith'],
             'id': ['exact'],
