@@ -34,8 +34,8 @@ class ItemFilter(FilterSet):
 class ItemType(DjangoObjectType):
     name = graphene.String(required=False)
     description = graphene.String(required=False)
-    price_m = graphene.String(required=False)
-    price_l = graphene.String(required=False)
+    price_m = graphene.Int(required=False)
+    price_l = graphene.Int(required=False)
     image_path = graphene.String(required=False)
     deleted = graphene.Boolean(required=False)
     errors = ErrorType()
