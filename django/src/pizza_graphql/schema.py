@@ -91,8 +91,11 @@ class Query(graphene.ObjectType):
             order = Order.objects.get(user=user, status=0)
             return order
         except Order.DoesNotExist:
-            empty_order = Order()
-            return empty_order
+            order = Order()
+            order.user = user
+            order.status = 0
+            order.save()
+            return order
 
 
 class Mutation(graphene.ObjectType):
