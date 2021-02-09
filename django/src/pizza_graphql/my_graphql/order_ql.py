@@ -5,7 +5,7 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 import graphene
 import graphql
 
-import auth_utils
+import connect_auth_server
 from api.models import Order, User
 from api.serializers import OrderSerializer
 from api import views
@@ -38,7 +38,7 @@ class ExecuteOrder(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
