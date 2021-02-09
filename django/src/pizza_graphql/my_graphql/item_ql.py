@@ -47,8 +47,7 @@ class ItemType(DjangoObjectType):
                   "price_m",
                   "price_l",
                   "image_path",
-                  "deleted",
-                  "errors")
+                  "deleted",)
         filter_fields = {
             'name': ['exact', 'icontains', 'istartswith'],
             'id': ['exact'],
