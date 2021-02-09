@@ -24,7 +24,6 @@ class Query(graphene.ObjectType):
     toppings = DjangoFilterConnectionField(
         topping_ql.ToppingType, filterset_class=topping_ql.ToppingFilter)
     user = graphene.Field(auth_ql.UserType)
-    register_user = graphene.Field(auth_ql.UserType)
     order_history = DjangoFilterConnectionField(
         order_history_ql.OrderHistoryType,
         filterset_class=order_history_ql.OrderFilter)
@@ -99,7 +98,8 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    register_user = auth_ql.UserSerializerMutation.Field()
+    # register_user = auth_ql.UserSerializerMutation.Field()
+    register_user = auth_ql.UserMutation.Field()
     add_cart = cart_ql.AddCart.Field()
     update_cart = cart_ql.UpdateCart.Field()
     delete_cart = cart_ql.DeleteCart.Field()
