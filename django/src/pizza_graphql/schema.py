@@ -63,7 +63,7 @@ class Query(graphene.ObjectType):
                     extensions={"code": error_code.get("401")})
 
         is_valid_date = user_util.created_at > datetime.now().astimezone() - \
-            timedelta(minutes=59)
+                        timedelta(minutes=59)
 
         if is_valid_date:
             user = User.objects.get(util=user_util)
@@ -91,7 +91,7 @@ class Query(graphene.ObjectType):
             order = Order.objects.get(user=user, status=0)
             return order
         except Order.DoesNotExist:
-            empty_order = []
+            empty_order = Order()
             return empty_order
 
 
