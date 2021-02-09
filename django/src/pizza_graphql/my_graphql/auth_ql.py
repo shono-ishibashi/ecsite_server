@@ -62,15 +62,7 @@ class UserMutation(graphene.Mutation):
             )
 
             if user_form.is_valid():
-                user_form.save()
-                user_form_data = user_form.cleaned_data
-                print(user_form.cleaned_data)
-                user = User()
-                user.name = user_form_data.get("name")
-                user.email = user_form_data.get("email")
-                user.zipcode = user_form_data.get("zipcode")
-                user.address = user_form_data.get("address")
-                user.telephone = user_form_data.get("telephone")
+                user = user_form.save()
                 return UserMutation(user)
 
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
