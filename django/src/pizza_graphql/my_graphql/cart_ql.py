@@ -38,7 +38,7 @@ class OrderItemType(DjangoObjectType):
         interfaces = (graphene.relay.Node,)
 
     def resolve_sub_total_price(self, info):
-        """OrderItemの値段を計算数メソッド
+        """OrderItemの値段を計算するメソッド
         """
         topping_price_m = 200
         topping_price_l = 300
