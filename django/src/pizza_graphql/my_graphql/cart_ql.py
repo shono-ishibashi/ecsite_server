@@ -25,10 +25,30 @@ class OrderItemType(DjangoObjectType):
     class Meta:
         model = OrderItem
         fields = "__all__"
-    # sub_total_price = graphene.Int()
+
+    sub_total_price = graphene.Int()
+
+    def resolve_sub_total_price(self, info):
+        topping_price_m = 200
+        topping_price_l = 300
+        print(self.id)
+        order_item: OrderItem = OrderItem.objects.get(pk=self.id)
+        order_toppings: OrderTopping = OrderTopping.objects.filter(
+            order_item=order_item)
+        print(order_toppings)
+        if order_item.size == "M":
+            order_item_price = order_item.quantity * \
+                (order_item.item.price_m + topping_price_m * len(order_toppings))
+        else:
+            order_item_price = order_item.quantity * \
+                (order_item.item.price_l + topping_price_l * len(order_toppings))
+
+        return order_item_price
 
     # def resolve_sub_total_price(self, info):
-    #     return self.sub_total_price
+
+
+#     return self.sub_total_price
 
 
 class OrderType(DjangoObjectType):
