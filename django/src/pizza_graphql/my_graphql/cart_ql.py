@@ -6,7 +6,7 @@ from graphene.relay.node import from_global_id
 import graphql
 
 import auth_utils
-from api.models import Order, OrderItem, OrderTopping, Topping, User
+from api.models import Order, OrderItem, OrderTopping, User
 from api.serializers import CartSerializer
 from pizza_graphql.my_graphql.auth_ql import UserType
 from pizza_graphql.my_graphql.item_ql import ItemType
@@ -25,17 +25,11 @@ class OrderToppingType(DjangoObjectType):
         interfaces = (graphene.relay.Node,)
 
 
-class OrderToppingConnection(graphene.relay.Connection):
-    class Meta:
-        node = OrderToppingType
-
-
 class OrderItemType(DjangoObjectType):
     item = graphene.Field(type=ItemType, required=False)
     quantity = graphene.Int(required=False)
     size = graphene.String(required=False)
     sub_total_price = graphene.Int(required=False)
-    order_toppings = graphene.relay.ConnectionField(OrderToppingConnection, required=False)
 
     class Meta:
         model = OrderItem
@@ -49,7 +43,7 @@ class OrderItemType(DjangoObjectType):
         topping_price_m = 200
         topping_price_l = 300
         order_item: OrderItem = OrderItem.objects.get(pk=self.id)
-        order_toppings: OrderTopping = \
+        order_toppings = \
             OrderTopping.objects.filter(order_item=order_item)
         print(order_toppings)
         if order_item.size == "M":
@@ -64,11 +58,6 @@ class OrderItemType(DjangoObjectType):
         return order_item_price
 
 
-class OrderItemConnection(graphene.relay.Connection):
-    class Meta:
-        node = OrderItemType
-
-
 class OrderType(DjangoObjectType):
     user = graphene.Field(type=UserType, required=False)
     status = graphene.Int(required=False)
@@ -81,7 +70,6 @@ class OrderType(DjangoObjectType):
     destination_tel = graphene.String(required=False)
     delivery_time = graphene.DateTime(required=False)
     payment_method = graphene.Int(required=False)
-    order_items = graphene.relay.ConnectionField(OrderItemConnection, required=False)
 
     class Meta:
         model = Order
