@@ -51,7 +51,7 @@ class Topping(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.IntegerField(null=False)
-    total_price = models.IntegerField()
+    total_price = models.IntegerField(null=True)
     order_date = models.DateField(null=True, blank=True)
     destination_name = models.CharField(max_length=100, blank=True)
     destination_email = models.CharField(max_length=100, blank=True)

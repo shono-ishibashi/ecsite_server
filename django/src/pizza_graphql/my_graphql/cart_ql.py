@@ -98,7 +98,7 @@ class OrderToppingInput(graphene.InputObjectType):
 
 
 class OrderItemInput(graphene.InputObjectType):
-    id = graphene.ID(required=True)
+    id = graphene.ID(required=False)
     item = graphene.ID(required=True)
     quantity = graphene.Int(required=True)
     size = graphene.String(required=True)
