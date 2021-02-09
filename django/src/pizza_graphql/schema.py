@@ -1,3 +1,8 @@
+from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
+    cart_ql, order_ql, topping_ql
+from api.models import User, UserUtil, Order, OrderItem, OrderTopping, Item, \
+    Topping
+from api.models import User, UserUtil, Order
 from datetime import datetime, timedelta
 import json
 
@@ -7,9 +12,6 @@ import graphql
 from graphene_django.filter import DjangoFilterConnectionField
 
 import auth_utils
-from api.models import User, UserUtil, Order
-from pizza_graphql.my_graphql import item_ql, auth_ql, order_history_ql, \
-    cart_ql
 
 
 class Query(graphene.ObjectType):
@@ -19,6 +21,8 @@ class Query(graphene.ObjectType):
     # idで商品を取得
     item = graphene.relay.Node.Field(item_ql.ItemType)
 
+    toppings = DjangoFilterConnectionField(
+        topping_ql.ToppingType, filterset_class=topping_ql.ToppingFilter)
     user = graphene.Field(auth_ql.UserType)
     register_user = graphene.Field(auth_ql.UserType)
     order_history = DjangoFilterConnectionField(
@@ -87,9 +91,11 @@ class Query(graphene.ObjectType):
             order = Order.objects.get(user=user, status=0)
             return order
         except Order.DoesNotExist:
-            print("カートなし")
-            empty_order = []
-            return empty_order
+            order = Order()
+            order.user = user
+            order.status = 0
+            order.save()
+            return order
 
 
 class Mutation(graphene.ObjectType):
@@ -97,6 +103,7 @@ class Mutation(graphene.ObjectType):
     add_cart = cart_ql.AddCart.Field()
     update_cart = cart_ql.UpdateCart.Field()
     delete_cart = cart_ql.DeleteCart.Field()
+    execute_order = order_ql.ExecuteOrder.Field()
 
 
 schema = graphene.Schema(
