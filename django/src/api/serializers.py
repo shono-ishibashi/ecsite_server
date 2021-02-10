@@ -68,13 +68,13 @@ class CartSerializer(serializers.ModelSerializer):
         user = models.User.objects.get(pk=user_id)
         try:
             order = models.Order.objects.get(user=user, status=0)
-            order.total_price = validated_data['total_price']
+            # order.total_price = validated_data['total_price']
             order.save()
         except models.Order.DoesNotExist:
             # user idがログイン中のユーザーidでstatusが0のorderがない場合は新規作成
             order = models.Order.objects.create(
-                user=user, status=validated_data['status'],
-                total_price=validated_data['total_price'])
+                user=user, status=validated_data['status'])
+            # total_price=validated_data['total_price'])
 
         order_item = validated_data['order_item']
         item = models.Item.objects.get(pk=order_item['item'])
@@ -90,6 +90,25 @@ class CartSerializer(serializers.ModelSerializer):
                 pk=order_topping['topping'])
             models.OrderTopping.objects.create(
                 topping=topping, order_item=order_item_obj)
+
+        order_items = models.OrderItem.objects.filter(order=order)
+        total_price = 0
+        # 合計金額を計算
+        for orderItem in order_items:
+            topping_count = orderItem.order_toppings.all().count()
+            if orderItem.size == "M":
+                oredr_item_price = (
+                    orderItem.item.price_m
+                    + topping_count * 200
+                ) * orderItem.quantity
+            elif orderItem.size == "L":
+                oredr_item_price = (
+                    orderItem.item.price_l
+                    + topping_count * 300
+                ) * orderItem.quantity
+            total_price += oredr_item_price
+        order.total_price = total_price
+        order.save()
         return order
 
     def update(self, validated_data, user_id):
@@ -115,7 +134,24 @@ class CartSerializer(serializers.ModelSerializer):
                     topping=topping, order_item=order_item_obj)
 
         # orderの合計金額を更新
-        order.total_price = validated_data['total_price']
+        # order.total_price = validated_data['total_price']
+        order_items = models.OrderItem.objects.filter(order=order)
+        total_price = 0
+        # 合計金額を計算
+        for orderItem in order_items:
+            topping_count = orderItem.order_toppings.all().count()
+            if orderItem.size == "M":
+                oredr_item_price = (
+                    orderItem.item.price_m
+                    + topping_count * 200
+                ) * orderItem.quantity
+            elif orderItem.size == "L":
+                oredr_item_price = (
+                    orderItem.item.price_l
+                    + topping_count * 300
+                ) * orderItem.quantity
+            total_price += oredr_item_price
+        order.total_price = total_price
         order.save()
         return order
 

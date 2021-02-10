@@ -48,12 +48,12 @@ class OrderItemType(DjangoObjectType):
         print(order_toppings)
         if order_item.size == "M":
             order_item_price = order_item.quantity * (
-                    order_item.item.price_m + topping_price_m
-                    * len(order_toppings))
+                order_item.item.price_m + topping_price_m
+                * len(order_toppings))
         else:
             order_item_price = order_item.quantity * (
-                    order_item.item.price_l + topping_price_l
-                    * len(order_toppings))
+                order_item.item.price_l + topping_price_l
+                * len(order_toppings))
 
         return order_item_price
 
@@ -112,7 +112,6 @@ class AddCart(graphene.Mutation):
     class Arguments:
         order_item = OrderItemInput(required=True)
         status = graphene.Int(required=True)
-        total_price = graphene.Int(required=True)
 
     order = graphene.Field(OrderType)
 
@@ -223,8 +222,7 @@ def decode_order_item_id(encoded_order: dict) -> dict:
             ],
             "size": "",
             "quantity": None
-        },
-        "total_price": None
+        }
     }
 
     # payloadに変数を格納
@@ -260,8 +258,9 @@ def decode_order_items_id(encoded_order: dict) -> dict:
             payload["order_items"][i]["order_toppings"][j] = \
                 {
                     "topping":
-                        from_global_id(payload["order_items"][i]["order_toppings"][j]["topping"])[1]
-                }
+                        from_global_id(
+                            payload["order_items"][i]["order_toppings"][j]["topping"])[1]
+            }
 
     print(payload)
 
