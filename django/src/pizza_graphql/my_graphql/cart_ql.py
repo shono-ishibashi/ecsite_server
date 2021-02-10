@@ -147,17 +147,11 @@ class UpdateCart(graphene.Mutation):
     class Arguments:
         order_items = graphene.List(OrderItemInput, required=True)
         status = graphene.Int(required=True)
-        total_price = graphene.Int(required=True)
 
     order = graphene.Field(OrderType)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
-
-        print("##################")
-        print(kwargs)
-        print("##################")
-
         payload = decode_order_items_id(kwargs)
 
         token = info.context.META.get('HTTP_AUTHORIZATION')
