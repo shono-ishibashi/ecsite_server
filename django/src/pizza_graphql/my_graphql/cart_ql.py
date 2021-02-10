@@ -112,7 +112,6 @@ class AddCart(graphene.Mutation):
     class Arguments:
         order_item = OrderItemInput(required=True)
         status = graphene.Int(required=True)
-        total_price = graphene.Int(required=True)
 
     order = graphene.Field(OrderType)
 
@@ -223,8 +222,7 @@ def decode_order_item_id(encoded_order: dict) -> dict:
             ],
             "size": "",
             "quantity": None
-        },
-        "total_price": None
+        }
     }
 
     # payloadに変数を格納

@@ -93,6 +93,7 @@ class CartSerializer(serializers.ModelSerializer):
 
         order_items = models.OrderItem.objects.filter(order=order)
         total_price = 0
+        # 合計金額を計算
         for orderItem in order_items:
             topping_count = orderItem.order_toppings.all().count()
             if orderItem.size == "M":
@@ -133,7 +134,24 @@ class CartSerializer(serializers.ModelSerializer):
                     topping=topping, order_item=order_item_obj)
 
         # orderの合計金額を更新
-        order.total_price = validated_data['total_price']
+        # order.total_price = validated_data['total_price']
+        order_items = models.OrderItem.objects.filter(order=order)
+        total_price = 0
+        # 合計金額を計算
+        for orderItem in order_items:
+            topping_count = orderItem.order_toppings.all().count()
+            if orderItem.size == "M":
+                oredr_item_price = (
+                    orderItem.item.price_m
+                    + topping_count * 200
+                ) * orderItem.quantity
+            elif orderItem.size == "L":
+                oredr_item_price = (
+                    orderItem.item.price_l
+                    + topping_count * 300
+                ) * orderItem.quantity
+            total_price += oredr_item_price
+        order.total_price = total_price
         order.save()
         return order
 
