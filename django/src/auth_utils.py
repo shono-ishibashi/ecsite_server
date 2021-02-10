@@ -11,3 +11,4 @@ def hash_password(password):
 def generate_token():
     token = uuid.uuid4().hex
     return token
+
