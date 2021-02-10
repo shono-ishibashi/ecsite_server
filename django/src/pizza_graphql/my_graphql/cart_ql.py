@@ -147,6 +147,7 @@ class UpdateCart(graphene.Mutation):
     class Arguments:
         order_items = graphene.List(OrderItemInput, required=True)
         status = graphene.Int(required=True)
+        total_price = graphene.Int(required=True)
 
     order = graphene.Field(OrderType)
 

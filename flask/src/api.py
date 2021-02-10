@@ -27,9 +27,6 @@ def fetch_order_history():
     offset = request.args.get("offset", default=0, type=int)
     limit = request.args.get("limit", default=5, type=int)
 
-    print("aaaaaaaaaaaaaaaaaaaaaaaaa")
-    print(vars(response))
-    print("aaaaaaaaaaaaaaaaaaaaaaaaa")
     login_user_id = response.json()['user']['id']
 
     # カートの状態でない注文を取得
