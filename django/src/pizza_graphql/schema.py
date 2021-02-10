@@ -12,6 +12,7 @@ import graphql
 from graphene_django.filter import DjangoFilterConnectionField
 
 import auth_utils
+import connect_auth_server
 
 
 class Query(graphene.ObjectType):
@@ -24,7 +25,6 @@ class Query(graphene.ObjectType):
     toppings = DjangoFilterConnectionField(
         topping_ql.ToppingType, filterset_class=topping_ql.ToppingFilter)
     user = graphene.Field(auth_ql.UserType)
-    register_user = graphene.Field(auth_ql.UserType)
     order_history = DjangoFilterConnectionField(
         order_history_ql.OrderHistoryType,
         filterset_class=order_history_ql.OrderFilter)
@@ -78,7 +78,7 @@ class Query(graphene.ObjectType):
 
     def resolve_cart(self, info, **kwargs):
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
@@ -99,7 +99,8 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    register_user = auth_ql.UserSerializerMutation.Field()
+    # register_user = auth_ql.UserSerializerMutation.Field()
+    register_user = auth_ql.UserMutation.Field()
     add_cart = cart_ql.AddCart.Field()
     update_cart = cart_ql.UpdateCart.Field()
     delete_cart = cart_ql.DeleteCart.Field()

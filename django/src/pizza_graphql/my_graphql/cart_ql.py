@@ -5,7 +5,7 @@ import graphene
 from graphene.relay.node import from_global_id
 import graphql
 
-import auth_utils
+import connect_auth_server
 from api.models import Order, OrderItem, OrderTopping, User
 from api.serializers import CartSerializer
 from pizza_graphql.my_graphql.auth_ql import UserType
@@ -122,7 +122,7 @@ class AddCart(graphene.Mutation):
         payload = decode_order_item_id(kwargs)
 
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
@@ -160,7 +160,7 @@ class UpdateCart(graphene.Mutation):
         payload = decode_order_items_id(kwargs)
 
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
@@ -190,7 +190,7 @@ class DeleteCart(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         token = info.context.META.get('HTTP_AUTHORIZATION')
-        response = auth_utils.fetch_login_user(token)
+        response = connect_auth_server.fetch_login_user(token)
         if response.status_code == 401:
             with open("./pizza_graphql/error_code.json", 'r') as json_file:
                 error_code = json.load(json_file)
